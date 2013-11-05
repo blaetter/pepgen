@@ -1,5 +1,7 @@
 <?php
 
+require_once('../vendor/autoload.php');
+
 // receive node and user id information from parameter
 
 $host = 'http://localhost/epub/epubs/download/';
