@@ -72,7 +72,7 @@ class epub
 		$this->epub_output_directory = $this->base_dir.'public/download/';
 
 		// the directory where the user specific epubs are copied to and processed
-		$this->epub_temp_dirctory = $this->base_dir'tmp/';
+		$this->epub_temp_dirctory = $this->base_dir.'tmp/';
 
 		// creating instance of filesystem
 		$this->filesystem = new Filesystem();
