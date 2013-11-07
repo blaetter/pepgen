@@ -15,6 +15,8 @@ class epub
 
 	private $http_base;
 
+	private $base_dir;
+
 	private $watermark;
 
 	private $nid;
@@ -43,7 +45,10 @@ class epub
 	{
 
 		// http base for everything
-		$this->http_base = 'http://localhost/epub/';
+		$this->http_base = 'http://epub.blaettertool.de/';
+
+		// the absolute base path of the application
+		$this->base_dir = '/var/www/vhosts/blaettertool.de/epub.blaettertool.de/';
 
 		// the nid. given by drupal and name of the epub
 		$this->nid = @htmlspecialchars($_REQUEST['nid']);
@@ -61,13 +66,13 @@ class epub
 		$this->epub_personal = $this->token . '.' . $this->epub;
 
 		// the directory where the original epub-folders are stored - uncompressed and not accessable from the web
-		$this->epub_original_directory = '/Users/andreas/Documents/htdocs/localhost/epub/epub/';
+		$this->epub_original_directory = $this->base_dir.'epub/';
 
 		// the directory where the generated epubs will be stored until they're delivered to the end user
-		$this->epub_output_directory = '/Users/andreas/Documents/htdocs/localhost/epub/public/download/';
+		$this->epub_output_directory = $this->base_dir.'public/download/';
 
 		// the directory where the user specific epubs are copied to and processed
-		$this->epub_temp_dirctory = '/Users/andreas/Documents/htdocs/localhost/epub/tmp/';
+		$this->epub_temp_dirctory = $this->base_dir'tmp/';
 
 		// creating instance of filesystem
 		$this->filesystem = new Filesystem();
