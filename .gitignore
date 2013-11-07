@@ -1,5 +1,6 @@
-epub/*
-mobi/*
-incoming/*
+epub/*epub*
+tmp/*epub*
+public/download/*epub*
 vendor/*
 composer.phar
+composer.lock
