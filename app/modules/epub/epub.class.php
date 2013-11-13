@@ -9,6 +9,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 
 class epub 
 {
@@ -268,6 +269,27 @@ class epub
 			$this->watermark.
 			strftime("%d.%m.%Y")
 		);
+	}
+
+	/**
+	 * Handles config object
+	 *
+	 */
+	private function getConfig() 
+	{
+		$configFinder = new Finder();
+
+		$configFinder->files()->name('config.yml')->in('../app/config/config/');
+
+
+		$configDirectories = array('../app/config');
+
+		$locator = new FileLocator($configDirectories);
+
+		$configFiles = $locator->locate('config.yml', null, false);	
+
+		print_r(YAML::parse(file_get_contents($configFiles[0])));exit;
+
 	}
 
 
