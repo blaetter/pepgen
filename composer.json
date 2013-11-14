@@ -2,13 +2,9 @@
 	"require": {
 		"symfony/finder": "2.3.*",
 		"symfony/debug": "2.3.*",
-		"symfony/config": "2.3.*",
 		"symfony/filesystem": "2.3.*",
 		"symfony/process": "2.3.*",
 		"symfony/console": "2.3.*",
-		"symfony/dom-crawler": "2.3.*",
-		"symfony/routing": "2.3.*",
-		"symfony/security": "2.3.*",
 		"symfony/yaml": "2.3.*"
 	}
 }

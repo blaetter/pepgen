@@ -1,3 +1,4 @@
+app/config/sample.config.yaml
 epub/*epub*
 tmp/*epub*
 public/download/*epub*
