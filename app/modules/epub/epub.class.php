@@ -39,6 +39,8 @@ class Epub
 
   private $template;
 
+  private $files_to_replace;
+
   private $finder;
 
   private $filesystem;
@@ -63,6 +65,9 @@ class Epub
 
     // the secret key for generating the token
     $this->secret = $this->config['secret'];
+
+    // the regexp for the files we have to replace text in
+    $this->files_to_replace = $this->config['files_to_replace'];
 
     // the id of the requested ePub
     $this->id = @htmlspecialchars($_REQUEST['id']);
@@ -207,7 +212,7 @@ class Epub
   {
     // now we need to try finding the requested files for modifications
     $this->finder = new Finder();
-    $this->finder->files()->name('/(000_Cover|042_Impressum).xhtml/i')->in($this->epub_temp_dirctory.$this->epub_personal);
+    $this->finder->files()->name($this->files_to_replace)->in($this->epub_temp_dirctory.$this->epub_personal);
 
     foreach($this->finder as $file) 
     {

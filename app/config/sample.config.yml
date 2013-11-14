@@ -1,5 +1,6 @@
-base_path: 
-http_base: 
-secret: 
-textpattern: 
-template: 
+base_path: /path/to/pepgen
+http_base: http://localhost/pepgen
+secret: MY_BIG_FAT_SECRET
+textpattern: /<!--WATERMARK-->/i
+template: <p>%s</p>
+files_to_replace: 

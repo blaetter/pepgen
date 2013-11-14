@@ -1,13 +1,13 @@
-# Automated ePub watermark generation for Blätter
+# PeP-Gen Personalized ePub Generation
 
 ## Introduction
 
-This application generates personalized ePubs. As ePubs are just compressed Folders and files, all you have to to is to provied unzipped versions of your ePub. The application itself is not ment to be called directly from the enduser (although its comfortable for testing purposes), its more an application that can speak to your website or shop. 
+This application generates personalized ePubs. As ePubs are just compressed Folders and files, all you have to to is to provide unzipped versions of your ePub. The application itself is not build to be called directly from the enduser (although it is comfortable for testing purposes), it is more an application that can speak to your website or shop. 
 
 ## Requirements
 
 * php > 5.3 for Symfony Components
-* Unix environment with an AMP stack (should work on windows to, but thats not tested nore supported
+* Unix environment with an AMP stack (should work on windows to, but thats not tested nor supported
 * Shell to run composer
 
 ## Installation
@@ -21,6 +21,17 @@ This application generates personalized ePubs. As ePubs are just compressed Fold
 7. put at least one unzipped ePub into the `epub` folder
 8. make sure your webserver only has access to public/ and go for it
 
+## Configuration
+
+You need to configure the following parameters that are located in the `app/config/config.yml` (step 5 of the installation process)
+
+1. `base_path` - The absolute base path to your copy of PeP-Gen. No trailing slash.
+2. `http_base` - The baseic URL of your PeP-Gen. No trailing slash.
+3. `secret` - The secret token that is shared between your website or shop and PeP-Gen
+4. `textpattern` - The textpattern that is located in your original ePubs e.g. `<!-- WATERMARK -->` or `XXX_WATERMARK_XXX`. Should be very unique. Has to contain delemiters because I don't know what characters you want to use.
+5. `template` - The template the textpattern is replaced by. It should contain a `%s` pattern so the watermark can be put into it
+6. `files_to_replace` a string of files where the watermark can be found in. Maybe you want to put the watermark in more than one file? Should either be a full filename or a regular expression including the delemiters.
+
 
 ## Usage
 
@@ -32,11 +43,11 @@ After setting up the application you can call it via a browser. The application 
 
 If a request does not provide all theese parameters, it will not be handled. The application itself copies the original unzipped ePub into a temporary folder, adds the watermark and zippes the ePub into `public/download` with a hashed filename. 
 
-Your Shop or Website can now decide how to deliver that to your costumer, there are three ways to do so:
+Your website or shop can now decide how to deliver that to your costumer, there are three ways to do so:
 
 1. Provide a direct download link: you can forward the user to the download location or you can display or mail the hashed URL of the generated ePub to the user. This method implicates, that the URL of this application becomes public. If you're fine with that, this method is the easy one and right for you.
-2. Your Shop or Website does a server request to the generated ePub and streames it to the end user. Using this method, your customer will receive the ePub directly from your Shop or Website. This version is more secure.
-3. If your Shop or Website and this application are on the same server, things are much easier for you. You can implement this application diretly into your Shop or Application or you can generate the personalized ePubs directly into a public folder of your Shop or Website.
+2. Your website or shop does a server request to the generated ePub and streames it to the end user. Using this method, your customer will receive the ePub directly from your website or shop. This version is more secure.
+3. If your website or shop and this application are on the same server, things are much easier for you. You can implement this application directly into your website or shop or you can generate the personalized ePubs directly into a public folder of your website or shop.
 
 ## Disclaimer
 

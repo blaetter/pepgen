@@ -1,5 +1,0 @@
-base_path: /Users/andreas/Documents/htdocs/miniam/blaetter-epup/
-http_base: http://localhost/miniam/blaetter-epup/public//
-secret: 7ec341545a23d7aea056e31eec15099d
-textpattern: /XXXXX/i
-template: <p>Lizensiert für %s</p>
