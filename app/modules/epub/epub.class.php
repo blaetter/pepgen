@@ -55,7 +55,7 @@ class Epub
     $this->http_base = $this->config['http_base'];
 
     // the absolute base path of the application
-    $this->base_dir = $this->config['base_dir'];
+    $this->base_dir = $this->config['base_path'];
 
     // the textpattern that is searched for in the epubs
     $this->textpattern = $this->config['textpattern'];
