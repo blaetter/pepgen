@@ -21,7 +21,7 @@ class Epub
 
   private $watermark;
 
-  private $nid;
+  private $id;
 
   private $token;
 
@@ -64,8 +64,8 @@ class Epub
     // the secret key for generating the token
     $this->secret = $this->config['secret'];
 
-    // the nid. given by drupal and name of the epub
-    $this->nid = @htmlspecialchars($_REQUEST['nid']);
+    // the id of the requested ePub
+    $this->id = @htmlspecialchars($_REQUEST['id']);
 
     // the token given by the request
     $this->token = @htmlspecialchars($_REQUEST['token']);
@@ -74,7 +74,7 @@ class Epub
     $this->watermark = @urldecode(htmlspecialchars($_REQUEST['watermark']));
 
     // the name of the epub - the name should be the node-id with an .epub suffix
-    $this->epub = $this->nid . '.epub';
+    $this->epub = $this->id . '.epub';
 
     // the name of the personal epub - the name should be the ordinary epub name plus the token
     $this->epub_personal = $this->token . '.' . $this->epub;
@@ -164,7 +164,7 @@ class Epub
   private function verify() 
   {
     // If no information is provided or the information is invalid, cancel request at this point.
-    if (empty($this->watermark) || empty($this->nid) || empty($this->token) || $this->token !== $this->tokenize()) {
+    if (empty($this->watermark) || empty($this->id) || empty($this->token) || $this->token !== $this->tokenize()) {
       $this->deny('Not enough arguments or wrong arguments.');
     }
   }
@@ -277,7 +277,7 @@ class Epub
   {
 
     return md5(
-      $this->nid.
+      $this->id.
       $this->secret.
       $this->watermark.
       strftime("%d.%m.%Y")
