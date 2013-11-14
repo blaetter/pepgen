@@ -12,8 +12,8 @@ This application generates personalized ePubs. As ePubs are just compressed Fold
 
 ## Installation
 
-1. clone repository: `git clone git@github.com:ambo/blaetter-epub.git`
-2. change directory: `cd blaetter-epub`
+1. clone repository: `git clone git@github.com:ambo/pepgen.git`
+2. change directory: `cd pepgen`
 3. install composer: `php -r "eval('?>'.file_get_contents('https://getcomposer.org/installer'));"`
 4. install dependencies `php composer.phar install`
 5. copy config: `cp app/config/sample.config.yml app/config/config.yml`
