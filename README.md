@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This application generates personalized ePubs. As ePubs are just compressed Folders and files, all you have to to is to provide unzipped versions of your ePub. The application itself is not build to be called directly from the enduser (although it is comfortable for testing purposes), it is more an application that can speak to your website or shop. 
+This application generates personalized ePubs. As ePubs are just compressed folders and files, all you have to do is to provide unzipped versions of your ePub. The application itself is not build to be called directly from the enduser (although it is comfortable for testing purposes), it is more an application that can speak to your website or shop. 
 
 ## Requirements
 
@@ -49,6 +49,13 @@ Your website or shop can now decide how to deliver that to your costumer, there 
 2. Your website or shop does a server request to the generated ePub and streames it to the end user. Using this method, your customer will receive the ePub directly from your website or shop. This version is more secure.
 3. If your website or shop and this application are on the same server, things are much easier for you. You can implement this application directly into your website or shop or you can generate the personalized ePubs directly into a public folder of your website or shop.
 
+## Further plans
+
+1. add logging
+2. add console actions for maintaing the application
+3. add console actions for deleting tmp/* and public/download/* after 24 hours
+4. add tests *hm*
+
 ## Disclaimer
 
-You should know, that this watermark is easy to remove for people who know about ePub generation. But its a visible border to put your ePubs free for all into the internet. There is absolutely no warranty that this watermark will prevent your content from beeing published by other people than yourself.
+You should know that this watermark is easy to remove for people who know about ePub generation. But its a visible border to put your ePubs free for all into the internet. There is absolutely no warranty that this watermark will prevent your content from beeing published by other people than yourself.
