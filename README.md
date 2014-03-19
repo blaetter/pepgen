@@ -7,7 +7,7 @@ This application generates personalized ePubs. As ePubs are just compressed fold
 ## Requirements
 
 * php > 5.3 for Symfony Components
-* Unix environment with an AMP stack (should work on windows to, but thats not tested nor supported
+* Unix environment with an AMP stack (should work on windows to, but thats not tested nor supported)
 * Shell to run composer
 
 ## Installation
@@ -54,7 +54,7 @@ Your website or shop can now decide how to deliver that to your costumer, there 
 1. add logging
 2. add console actions for maintaing the application
 3. add console actions for deleting tmp/* and public/download/* after 24 hours
-4. add tests *hm*
+4. add tests :)
 
 ## Disclaimer
 
