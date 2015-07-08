@@ -23,7 +23,7 @@ class Epub
 
     private $watermark;
 
-    private $id;
+    private $epub_id;
 
     private $token;
 
@@ -71,7 +71,7 @@ class Epub
         $this->files_to_replace = $this->config['files_to_replace'];
 
         // the id of the requested ePub
-        $this->id = @htmlspecialchars($_REQUEST['id']);
+        $this->epub_id = @htmlspecialchars($_REQUEST['id']);
 
         // the token given by the request
         $this->token = @htmlspecialchars($_REQUEST['token']);
@@ -80,7 +80,7 @@ class Epub
         $this->watermark = @urldecode(htmlspecialchars($_REQUEST['watermark']));
 
         // the name of the epub - the name should be the node-id with an .epub suffix
-        $this->epub = $this->id . '.epub';
+        $this->epub = $this->epub_id . '.epub';
 
         // the name of the personal epub - the name should be the ordinary epub name plus the token
         $this->epub_personal = $this->token . '.' . $this->epub;
@@ -166,7 +166,7 @@ class Epub
     private function verify()
     {
         // If no information is provided or the information is invalid, cancel request at this point.
-        if (empty($this->watermark) || empty($this->id) || empty($this->token) || $this->token !== $this->tokenize()) {
+        if (empty($this->watermark) || empty($this->epub_id) || empty($this->token) || $this->token !== $this->tokenize()) {
             $this->deny('Not enough arguments or wrong arguments.');
         }
     }
@@ -277,7 +277,7 @@ class Epub
     private function tokenize()
     {
         return md5(
-            $this->id.
+            $this->epub_id.
             $this->secret.
             $this->watermark.
             strftime("%d.%m.%Y")

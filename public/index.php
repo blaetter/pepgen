@@ -11,5 +11,3 @@ require_once('../app/modules/epub/epub.class.php');
 
 $epub = new epub();
 $epub->run();
-
-?>
