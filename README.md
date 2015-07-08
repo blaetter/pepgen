@@ -1,6 +1,6 @@
 # PeP-Gen Personalized ePub Generation
 
-[![Build Status](https://travis-ci.org/ambo/pepgen/dev-2.0)](https://travis-ci.org/ambo/pepgen)
+[![Build Status](https://travis-ci.org/ambo/pepgen.svg?branch=dev-2.0)](https://travis-ci.org/ambo/pepgen)
 
 ## Introduction
 
