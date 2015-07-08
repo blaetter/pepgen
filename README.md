@@ -1,6 +1,6 @@
 # PeP-Gen Personalized ePub Generation
 
-[![Coverage Status](https://coveralls.io/repos/ambo/pepgen/badge.svg?branch=master&service=github)](https://coveralls.io/github/ambo/pepgen?branch=master)
+[![Coverage Status](https://coveralls.io/repos/ambo/pepgen/badge.svg?branch=dev-2.0&service=github)](https://coveralls.io/github/ambo/pepgen?branch=master)
 [![Build Status](https://travis-ci.org/ambo/pepgen.svg?branch=dev-2.0)](https://travis-ci.org/ambo/pepgen)
 [![Code Climate](https://codeclimate.com/github/ambo/pepgen/badges/gpa.svg)](https://codeclimate.com/github/ambo/pepgen)
 
@@ -41,7 +41,7 @@ You need to configure the following parameters that are located in the `app/conf
 
 After setting up the application you can call it via a browser. The application needs the following parameters:
 
-1. `id`- the id of the requested ePub. In the most cases this should be an integer or string that represents the name of your epub without the file extension.
+1. `epub_id`- the id of the requested ePub. In the most cases this should be an integer or string that represents the name of your epub without the file extension.
 2. `token` - the personalized token of the request. This token changed on every request, and only the two endpoints - e.g. your website or shop and this application should know how to build it. It contains a secret string, some of the request variables and a date string. Only if the token can be validated by the application, the request is handled.
 3. `watermark` - this is the watermark that is put into the ePub. What it contains depends on you.
 
