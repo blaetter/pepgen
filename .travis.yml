@@ -8,5 +8,3 @@ php:
 install:
   - curl -s http://getcomposer.org/installer | php -d date.timezone="Europe/Berlin" -- --install-dir=./bin/
   - ./bin/composer.phar install
-
-script: ./bin/composer.phar build
