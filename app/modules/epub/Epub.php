@@ -5,7 +5,7 @@
  * handles epub stuff
  */
 
-namespace Pepgen;
+namespace Pepgen\epub;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -166,7 +166,12 @@ class Epub
     private function verify()
     {
         // If no information is provided or the information is invalid, cancel request at this point.
-        if (empty($this->watermark) || empty($this->epub_id) || empty($this->token) || $this->token !== $this->tokenize()) {
+        if (
+            empty($this->watermark) ||
+            empty($this->epub_id) ||
+            empty($this->token) ||
+            $this->token !== $this->tokenize()
+        ) {
             $this->deny('Not enough arguments or wrong arguments.');
         }
     }
