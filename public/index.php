@@ -11,16 +11,18 @@ require_once('../vendor/autoload.php');
 
 $epub_id = $token = $watermark = false;
 
-if (isset($_POST['id'])) {
-    $epub_id = htmlspecialchars($_POST['id']);
+$request = $_REQUEST;
+
+if (isset($request['id'])) {
+    $epub_id = htmlspecialchars($request['id']);
 }
 
-if (isset($_POST['token'])) {
-    $token = htmlspecialchars($_POST['token']);
+if (isset($request['token'])) {
+    $token = htmlspecialchars($request['token']);
 }
 
-if (isset($_POST['watermark'])) {
-    $watermark = urldecode(htmlspecialchars($_POST['watermark']));
+if (isset($request['watermark'])) {
+    $watermark = urldecode(htmlspecialchars($request['watermark']));
 }
 
 $epub = new \Pepgen\epub\Epub($epub_id, $token, $watermark);
