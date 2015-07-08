@@ -7,16 +7,16 @@
 
 namespace Pepgen\epub;
 
+use Pepgen\helper\Config;
+use Pepgen\helper\Tokenizer;
+
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Yaml\Yaml;
 
 class Epub
 {
-    private $config;
-
     private $http_base;
 
     private $base_dir;
@@ -31,11 +31,11 @@ class Epub
 
     private $epub;
 
-    private $epub_original_directory;
+    private $epub_original_dir;
 
-    private $epub_output_directory;
+    private $epub_output_dir;
 
-    private $epub_temp_dirctory;
+    private $epub_temp_dir;
 
     private $textpattern;
 
@@ -47,37 +47,34 @@ class Epub
 
     private $filesystem;
 
-    public function __construct()
+    public function __construct($epub_id, $token, $watermark)
     {
-        // get the configuration
-        $this->getConfig();
-
         // http base for everything
-        $this->http_base = $this->config['http_base'];
+        $this->http_base = Config::get('http_base');
 
         // the absolute base path of the application
-        $this->base_dir = $this->config['base_path'];
+        $this->base_dir = Config::get('base_path');
 
         // the textpattern that is searched for in the epubs
-        $this->textpattern = $this->config['textpattern'];
+        $this->textpattern = Config::get('textpattern');
 
         // the template the textpattern is replaced with
-        $this->template = $this->config['template'];
+        $this->template = Config::get('template');
 
         // the secret key for generating the token
-        $this->secret = $this->config['secret'];
+        $this->secret = Config::get('secret');
 
         // the regexp for the files we have to replace text in
-        $this->files_to_replace = $this->config['files_to_replace'];
+        $this->files_to_replace = Config::get('files_to_replace');
 
         // the id of the requested ePub
-        $this->epub_id = @htmlspecialchars($_REQUEST['id']);
+        $this->epub_id = $epub_id;
 
         // the token given by the request
-        $this->token = @htmlspecialchars($_REQUEST['token']);
+        $this->token = $token;
 
         // the watermark that will be printed right into the epub
-        $this->watermark = @urldecode(htmlspecialchars($_REQUEST['watermark']));
+        $this->watermark = $watermark;
 
         // the name of the epub - the name should be the node-id with an .epub suffix
         $this->epub = $this->epub_id . '.epub';
@@ -86,13 +83,13 @@ class Epub
         $this->epub_personal = $this->token . '.' . $this->epub;
 
         // the directory where the original epub-folders are stored - uncompressed and not accessable from the web
-        $this->epub_original_directory = $this->base_dir.'/epub/';
+        $this->epub_original_dir = $this->base_dir.'/epub/';
 
         // the directory where the generated epubs will be stored until they're delivered to the end user
-        $this->epub_output_directory = $this->base_dir.'/public/download/';
+        $this->epub_output_dir = $this->base_dir.'/public/download/';
 
         // the directory where the user specific epubs are copied to and processed
-        $this->epub_temp_dirctory = $this->base_dir.'/tmp/';
+        $this->epub_temp_dir = $this->base_dir.'/tmp/';
 
         // creating instance of filesystem
         $this->filesystem = new Filesystem();
@@ -104,7 +101,6 @@ class Epub
      */
     public function run()
     {
-
         // verify the request
         $this->verify();
 
@@ -132,7 +128,6 @@ class Epub
     public function success()
     {
         $this->out('Success');
-        exit;
     }
 
     /**
@@ -142,7 +137,7 @@ class Epub
     public function fastrun()
     {
         // check for needed files
-        if ($this->filesystem->exists($this->epub_output_directory.$this->epub_personal)) {
+        if ($this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
             $this->success();
         }
     }
@@ -154,9 +149,9 @@ class Epub
      */
     public function deny($msg = '')
     {
-        $this->out('Something went wrong: '.$msg);
         header("HTTP/1.0 400 Bad Request");
-        exit;
+        $this->out('Something went wrong: '.$msg);
+        exit();
     }
 
     /**
@@ -169,7 +164,7 @@ class Epub
         if (empty($this->watermark) ||
             empty($this->epub_id) ||
             empty($this->token) ||
-            $this->token !== $this->tokenize()
+            $this->token !== Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark)
         ) {
             $this->deny('Not enough arguments or wrong arguments.');
         }
@@ -184,15 +179,15 @@ class Epub
     {
         // check for needed files
         // if its not there the requests is per se not allowed
-        if (!$this->filesystem->exists($this->epub_original_directory.$this->epub)) {
+        if (!$this->filesystem->exists($this->epub_original_dir.$this->epub)) {
             $this->deny('Requested ePub does not exist.');
         }
 
         // copy the original file to the target directory and rename it
         try {
             $this->filesystem->mirror(
-                $this->epub_original_directory.$this->epub,
-                $this->epub_temp_dirctory.$this->epub_personal,
+                $this->epub_original_dir.$this->epub,
+                $this->epub_temp_dir.$this->epub_personal,
                 null,
                 array('override' => true)
             );
@@ -209,7 +204,7 @@ class Epub
     {
         // now we need to try finding the requested files for modifications
         $this->finder = new Finder();
-        $this->finder->files()->name($this->files_to_replace)->in($this->epub_temp_dirctory.$this->epub_personal);
+        $this->finder->files()->name($this->files_to_replace)->in($this->epub_temp_dir.$this->epub_personal);
 
         foreach ($this->finder as $file) {
             // get the files content
@@ -242,13 +237,13 @@ class Epub
         // lets start the process that handles the zipping
         $process = new Process(
             'cd '.
-            $this->epub_temp_dirctory.
+            $this->epub_temp_dir.
             $this->epub_personal.
             ' && zip -0Xq '.
-            $this->epub_output_directory.
+            $this->epub_output_dir.
             $this->epub_personal.
             ' mimetype && zip -Xr9Dq '.
-            $this->epub_output_directory.
+            $this->epub_output_dir.
             $this->epub_personal.
             ' *'
         );
@@ -259,7 +254,7 @@ class Epub
             $this->deny('Zipping went wrong. Could not create personalised ePub.');
         }
 
-        if (!$this->filesystem->exists($this->epub_output_directory.$this->epub_personal)) {
+        if (!$this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
             $this->deny('personalized ePub could not be created. Please try again later.');
         }
     }
@@ -272,41 +267,5 @@ class Epub
     private function out($message)
     {
         print(json_encode($message));
-    }
-
-    /**
-     * tokenize - the unique implementation of how to build the token
-     *
-     */
-    private function tokenize()
-    {
-        return md5(
-            $this->epub_id.
-            $this->secret.
-            $this->watermark.
-            strftime("%d.%m.%Y")
-        );
-    }
-
-    /**
-     * Handles config object
-     *
-     */
-    private function getConfig()
-    {
-        $configFinder = new Finder();
-
-        $configFinder->files()->name('config.yml')->in('../app/config/');
-
-        foreach ($configFinder as $config) {
-            $configs[] = $config->getContents();
-        }
-
-        $this->config = YAML::parse(implode('\r\n', $configs));
-
-        if (empty($this->config)) {
-            $this->deny('Could not load config - aborting.');
-        }
-
     }
 }
