@@ -1,6 +1,8 @@
 # PeP-Gen Personalized ePub Generation
 
+[![Coverage Status](https://coveralls.io/repos/ambo/pepgen/badge.svg?branch=master&service=github)](https://coveralls.io/github/ambo/pepgen?branch=master)
 [![Build Status](https://travis-ci.org/ambo/pepgen.svg?branch=dev-2.0)](https://travis-ci.org/ambo/pepgen)
+[![Code Climate](https://codeclimate.com/github/ambo/pepgen/badges/gpa.svg)](https://codeclimate.com/github/ambo/pepgen)
 
 ## Introduction
 
