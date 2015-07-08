@@ -1,8 +1,10 @@
 # PeP-Gen Personalized ePub Generation
 
+[![Build Status](https://travis-ci.org/ambo/pepgen/dev-2.0)](https://travis-ci.org/ambo/pepgen)
+
 ## Introduction
 
-This application generates personalized ePubs. As ePubs are just compressed folders and files, all you have to do is to provide unzipped versions of your ePub. The application itself is not build to be called directly from the enduser (although it is comfortable for testing purposes), it is more an application that can speak to your website or shop. 
+This application generates personalized ePubs. As ePubs are just compressed folders and files, all you have to do is to provide unzipped versions of your ePub. The application itself is not build to be called directly from the enduser (although it is comfortable for testing purposes), it is more an application that can speak to your website or shop.
 
 ## Requirements
 
@@ -39,9 +41,9 @@ After setting up the application you can call it via a browser. The application 
 
 1. `id`- the id of the requested ePub. In the most cases this should be an integer or string that represents the name of your epub without the file extension.
 2. `token` - the personalized token of the request. This token changed on every request, and only the two endpoints - e.g. your website or shop and this application should know how to build it. It contains a secret string, some of the request variables and a date string. Only if the token can be validated by the application, the request is handled.
-3. `watermark` - this is the watermark that is put into the ePub. What it contains depends on you. 
+3. `watermark` - this is the watermark that is put into the ePub. What it contains depends on you.
 
-If a request does not provide all theese parameters, it will not be handled. The application itself copies the original unzipped ePub into a temporary folder, adds the watermark and zippes the ePub into `public/download` with a hashed filename. 
+If a request does not provide all theese parameters, it will not be handled. The application itself copies the original unzipped ePub into a temporary folder, adds the watermark and zippes the ePub into `public/download` with a hashed filename.
 
 Your website or shop can now decide how to deliver that to your costumer, there are three ways to do so:
 
