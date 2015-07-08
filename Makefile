@@ -26,6 +26,6 @@ fix: # automated repair of code smells
 	vendor/bin/phpcbf --standard=psr2 app/
 
 test: #runs all tests
-	vendor/bin/phpmd app/ text phpmd.rules.xml
+	#vendor/bin/phpmd app/ text phpmd.rules.xml
 	vendor/bin/phpcs --standard=psr2 app/
 	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
