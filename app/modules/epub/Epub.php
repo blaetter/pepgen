@@ -1,19 +1,21 @@
 <?php
 /**
- * Class epub
+ * Class Epub
  *
  * handles epub stuff
  */
 
 namespace Pepgen\epub;
 
-use Pepgen\helper\Config;
-use Pepgen\helper\Tokenizer;
-
+// vendor libraries to use
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
+
+// project libraries to use
+use Pepgen\helper\Config;
+use Pepgen\helper\Tokenizer;
 
 class Epub
 {
@@ -118,7 +120,6 @@ class Epub
 
         // everything is fine
         $this->success();
-
     }
 
     /**
