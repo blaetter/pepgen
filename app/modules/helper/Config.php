@@ -32,8 +32,7 @@ class Config
         $config = self::getConfig();
         if (isset($config[$key])) {
             return $config[$key];
-        } else {
-            return false;
         }
+        return false;
     }
 }
