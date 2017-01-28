@@ -2,7 +2,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/blaetter/pepgen/badge.svg?branch=dev-2.0&service=github)](https://coveralls.io/github/blaetter/pepgen?branch=dev-2.0)
 [![Build Status](https://travis-ci.org/blaetter/pepgen.svg?branch=dev-2.0)](https://travis-ci.org/blaetter/pepgen)
-[![Code Climate](https://codeclimate.com/github/blaetter/pepgen/badges/gpa.svg)](https://codeclimate.com/github/blaetter/pepgen)
+[![Code Climate](https://codeclimate.com/repos/588ca2f4cf17ac5ac80046fe/badges/05641d378db1cb0dfe91/gpa.svg)](https://codeclimate.com/repos/588ca2f4cf17ac5ac80046fe/feed)
 
 ## Introduction
 
