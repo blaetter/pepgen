@@ -16,7 +16,7 @@ class Config
     {
         $configFinder = new Finder();
 
-        $configFinder->files()->name('config.yml')->in('../app/config/');
+        $configFinder->files()->name('config.yml')->in(__DIR__ . '/../../../app/config/');
 
         $configs = array();
 
