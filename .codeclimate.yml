@@ -2,4 +2,4 @@ engines:
   phpmd:
     enabled: true
     config:
-      rulesets: "phpunit.rules.xml"
+      rulesets: "phpunit.xml.dist"
