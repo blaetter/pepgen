@@ -1,0 +1,7 @@
+engines:
+  phpmd:
+    enabled: true
+    config:
+      file_extensions:
+        - php
+      rulesets: "phpunit.rules.xml"
