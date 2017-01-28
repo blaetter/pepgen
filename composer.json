@@ -1,16 +1,16 @@
 {
-	"name": "PePGen",
-  "type": "project",
-  "version": "1.1.0",
-  "description": "Personalized ePub Generation",
+    "name": "PePGen",
+    "type": "project",
+    "version": "1.1.0",
+    "description": "Personalized ePub Generation",
 	"website": "https://github.com/ambo/pepgen",
-  "authors": [
-    {
-      "name": "Andreas Mängel"
-    }
-  ],
-  "prefer-stable": true,
-  "minimum-stability": "beta",
+    "authors": [
+        {
+          "name": "Andreas Mängel"
+        }
+    ],
+    "prefer-stable": true,
+    "minimum-stability": "beta",
 	"require": {
 		"symfony/finder": "2.7.*",
 		"symfony/debug": "2.7.*",
