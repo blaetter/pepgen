@@ -13,12 +13,12 @@
 >
     <testsuites>
         <testsuite name="PePGen Test Suite">
-            <directory>./tests/PePGen/</directory>
+            <directory>./tests/epub</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory>./app/PePGen</directory>
+            <directory>./app/epub</directory>
         </whitelist>
     </filter>
     <logging>
