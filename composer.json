@@ -12,6 +12,7 @@
     "prefer-stable": true,
     "minimum-stability": "beta",
     "require": {
+        "php": ">5.6",
         "symfony/finder": "2.7.*",
         "symfony/debug": "2.7.*",
         "symfony/filesystem": "2.7.*",
@@ -20,16 +21,16 @@
         "symfony/yaml": "2.7.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.7.*",
-        "phpmd/phpmd": "2.2.*",
-        "squizlabs/php_codesniffer": "2.3.*",
-        "satooshi/php-coveralls": "0.6.*",
-        "sami/sami": "3.0.*"
+        "phpunit/phpunit": "@stable",
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "@stable",
+        "satooshi/php-coveralls": "@stable",
+        "sami/sami": "@stable"
     },
     "autoload": {
         "psr-4": { "Pepgen\\": "app/modules" }
     },
     "autoload-dev": {
-        "psr-4": { "Pepgen\\Tests\\" : "tests/Pepgen" }
+        "psr-4": { "Pepgen\\Tests\\" : "tests/epub" }
     }
 }
