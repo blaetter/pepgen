@@ -20,16 +20,16 @@
         "symfony/yaml": "2.7.*"
     },
     "require-dev": {
-    "phpunit/phpunit": "4.7.*",
-    "phpmd/phpmd": "2.2.*",
-    "squizlabs/php_codesniffer": "2.3.*",
-    "satooshi/php-coveralls": "0.6.*",
-    "sami/sami": "3.0.*"
-  },
-  "autoload": {
-    "psr-4": { "Pepgen\\": "app/modules" }
-  },
-  "autoload-dev": {
-    "psr-4": { "Pepgen\\Tests\\" : "tests/Pepgen" }
-  }
+        "phpunit/phpunit": "4.7.*",
+        "phpmd/phpmd": "2.2.*",
+        "squizlabs/php_codesniffer": "2.3.*",
+        "satooshi/php-coveralls": "0.6.*",
+        "sami/sami": "3.0.*"
+    },
+    "autoload": {
+        "psr-4": { "Pepgen\\": "app/modules" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Pepgen\\Tests\\" : "tests/Pepgen" }
+    }
 }
