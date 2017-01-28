@@ -1,0 +1,35 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# General rules
+# -------------
+# - Unicode
+# - Unix-style line endings
+# - Newline before EOF
+# - space indentation
+# - No trailing spaces
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+trim_trailing_whitespace = true
+
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab
+
+
+# Files that need whitespace at the end of lines
+# ----------------------------------------------
+# - Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+[*.php]
+indent_size = 4
+
+[{*.yml,*.json}]
+indent_size = 2
