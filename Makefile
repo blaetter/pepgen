@@ -27,4 +27,4 @@ fix: # automated repair of code smells
 
 test: #runs all tests
 	vendor/bin/phpcs --standard=psr2 app/
-	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+	php -dzend_extension=xdebug.so vendor/bin/phpunit -c phpunit.xml.dist

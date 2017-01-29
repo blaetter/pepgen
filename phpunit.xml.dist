@@ -18,7 +18,7 @@
     </testsuites>
     <filter>
         <whitelist>
-            <directory>./app/epub</directory>
+            <directory>./app/modules</directory>
         </whitelist>
     </filter>
     <logging>
