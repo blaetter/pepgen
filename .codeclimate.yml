@@ -6,8 +6,11 @@ engines:
       - php
   fixme:
     enabled: true
-  phpmd:
+  phpcodesniffer:
     enabled: true
+    config:
+      file_extensions: "php"
+      standard: "PSR1,PSR2"
 ratings:
   paths:
   - "**.inc"
