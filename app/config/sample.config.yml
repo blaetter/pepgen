@@ -3,4 +3,6 @@ http_base: http://localhost/pepgen
 secret: MY_BIG_FAT_SECRET
 textpattern: /<!--WATERMARK-->/i
 template: <p>%s</p>
-files_to_replace: 
+files_to_replace:
+# loglevel - @see RFC 5424
+loglevel: 100
