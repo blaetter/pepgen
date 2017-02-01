@@ -16,7 +16,7 @@ This application generates personalized ePubs. As ePubs are just compressed fold
 
 ## Installation
 
-1. clone repository: `git clone git@github.com:ambo/pepgen.git`
+1. clone repository: `git clone git@github.com:blaetter/pepgen.git`
 2. change directory: `cd pepgen`
 3. install composer: `php -r "eval('?>'.file_get_contents('https://getcomposer.org/installer'));"`
 4. install dependencies `php composer.phar install`
@@ -35,6 +35,7 @@ You need to configure the following parameters that are located in the `app/conf
 4. `textpattern` - The textpattern that is located in your original ePubs e.g. `<!-- WATERMARK -->` or `XXX_WATERMARK_XXX`. Should be very unique. Has to contain delemiters because I don't know what characters you want to use.
 5. `template` - The template the textpattern is replaced by. It should contain a `%s` pattern so the watermark can be put into it
 6. `files_to_replace` a string of files where the watermark can be found in. Maybe you want to put the watermark in more than one file? Should either be a full filename or a regular expression including the delemiters.
+7. `loglevel` a RFC 5424 numeric loglevel.
 
 
 ## Usage
