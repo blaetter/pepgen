@@ -2,6 +2,7 @@ app/config/config.yml
 build/*
 composer.phar
 epub/*epub*
+logs/*
 public/_tests
 public/download/*epub*
 tmp/*epub*
