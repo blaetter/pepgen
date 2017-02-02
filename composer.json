@@ -25,8 +25,7 @@
         "phpunit/phpunit": "@stable",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "@stable",
-        "satooshi/php-coveralls": "@stable",
-        "sami/sami": "@stable"
+        "satooshi/php-coveralls": "@stable"
     },
     "autoload": {
         "psr-4": { "Pepgen\\": "app/modules" }
