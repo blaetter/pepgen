@@ -26,5 +26,5 @@ fix: # automated repair of code smells
 	vendor/bin/phpcbf --standard=psr2 app/
 
 test: #runs all tests
-	vendor/bin/phpcs --standard=psr2 app/
+	vendor/bin/phpcs --config-set ignore_warnings_on_exit 1 --standard=psr2 app/
 	php -dzend_extension=xdebug.so vendor/bin/phpunit -c phpunit.xml.dist
