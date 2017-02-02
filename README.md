@@ -3,6 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/blaetter/pepgen/badge.svg)](https://coveralls.io/github/blaetter/pepgen)
 [![Build Status](https://travis-ci.org/blaetter/pepgen.svg)](https://travis-ci.org/blaetter/pepgen)
 [![Code Climate](https://codeclimate.com/github/blaetter/pepgen/badges/gpa.svg)](https://codeclimate.com/github/blaetter/pepgen)
+[![Dependency Status](https://www.versioneye.com/user/projects/588d03ccbe496c003dcdc006/badge.svg)](https://www.versioneye.com/user/projects/588d03ccbe496c003dcdc006)
 
 ## Introduction
 
