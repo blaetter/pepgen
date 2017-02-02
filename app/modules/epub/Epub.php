@@ -21,6 +21,10 @@ use Pepgen\helper\Tokenizer;
 
 class Epub
 {
+    public $success;
+
+    public $message;
+
     private $http_base;
 
     private $base_dir;
@@ -55,6 +59,9 @@ class Epub
 
     public function __construct($epub_id, $token, $watermark)
     {
+        // success is false by default, switches to true on success
+        $this->success = false;
+
         // http base for everything
         $this->http_base = Config::get('http_base');
 
@@ -103,7 +110,12 @@ class Epub
         // get logging instance
         $this->logger = new Logger('pepgen');
         // Now add some handlers
-        $this->logger->pushHandler(new RotatingFileHandler(__DIR__.'/../../../logs/application.log', Config::get('loglevel')));
+        $this->logger->pushHandler(
+            new RotatingFileHandler(
+                __DIR__.'/../../../logs/application.log',
+                Config::get('loglevel')
+            )
+        );
     }
 
     /**
@@ -137,9 +149,32 @@ class Epub
      */
     public function success()
     {
+        // set success to true cause everything is fine
+        $this->success = true;
         // log success into info stream
-        $this->logger->info('Success: epub ready for download.', array('epub_id' => $this->epub_id, 'token' => $this->token));
-        $this->out('Success');
+        $this->logger->info(
+            'Success: epub ready for download.',
+            array('epub_id' => $this->epub_id, 'token' => $this->token)
+        );
+        $this->message = 'Success';
+    }
+
+    /**
+     * This means there's noting to do, so deny the request
+     *
+     * @param $msg - the messages that is displayed
+     */
+    public function deny($msg = '')
+    {
+        // log bad request
+        $this->logger->info(
+            'Denied: ' . $msg,
+            array('epub_id' => $this->epub_id, 'token' => $this->token)
+        );
+        // send error message to end user
+        $this->message = 'Something went wrong: ' . $msg;
+        // because of previous errors, we need to end the run() here
+        throw new \ErrorException($this->message);
     }
 
     /**
@@ -150,24 +185,12 @@ class Epub
     {
         // check for needed files
         if ($this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
-            $this->logger->info('Fastrun: Found previously generated file.', array('epub_id' => $this->epub_id, 'token' => $this->token));
+            $this->logger->info(
+                'Fastrun: Found previously generated file.',
+                array('epub_id' => $this->epub_id, 'token' => $this->token)
+            );
             $this->success();
         }
-    }
-
-    /**
-     * This means there's noting to do, so deny the request
-     *
-     * @param $msg - the messages that is displayed
-     */
-    public function deny($msg = '')
-    {
-        // set bad request header
-        header("HTTP/1.0 400 Bad Request");
-        // log bad request
-        $this->logger->info('Denied: ' . $msg, array('epub_id' => $this->epub_id, 'token' => $this->token));
-        // send error message to end user
-        $this->out('Something went wrong: '.$msg);
     }
 
     /**
@@ -176,8 +199,18 @@ class Epub
      */
     private function verify()
     {
-        // If no information is provided or the information is invalid, cancel request at this point.
-        if (empty($this->watermark) ||
+         $this->logger->debug(
+            'Verify: ',
+            array(
+                'epub_id' => $this->epub_id,
+                'token' => $this->token,
+                'watermark' => $this->watermark,
+                'tokenize' => Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark),
+            )
+        );
+       // If no information is provided or the information is invalid, cancel request at this point.
+        if (
+            empty($this->watermark) ||
             empty($this->epub_id) ||
             empty($this->token) ||
             $this->token !== Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark)
@@ -223,11 +256,22 @@ class Epub
         $this->finder->files()->name($this->files_to_replace)->in($this->epub_temp_dir.$this->epub_personal);
 
         // log into debug stream
-        $this->logger->debug('Modify: Checking for files.', array('epub_id' => $this->epub_id, 'token' => $this->token, 'files' => $this->files_to_replace));
+        $this->logger->debug(
+            'Modify: Checking for files.',
+            array('epub_id' => $this->epub_id, 'token' => $this->token, 'files' => $this->files_to_replace)
+        );
 
         foreach ($this->finder as $file) {
             // log into debug stream
-            $this->logger->debug('Modify: Found file: ' . $file, array('epub_id' => $this->epub_id, 'token' => $this->token, 'files' => $this->files_to_replace, 'pattern' => $this->textpattern));
+            $this->logger->debug(
+                'Modify: Found file: ' . $file,
+                array(
+                    'epub_id' => $this->epub_id,
+                    'token' => $this->token,
+                    'files' => $this->files_to_replace,
+                    'pattern' => $this->textpattern
+                )
+            );
 
             // get the files content
             $original_content = $file->getContents();
@@ -279,16 +323,5 @@ class Epub
         if (!$this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
             $this->deny('personalized ePub could not be created. Please try again later.');
         }
-    }
-
-    /**
-     * This function renders a message in json and gives it back to the user
-     *
-     *
-     */
-    private function out($message)
-    {
-        print(json_encode($message));
-        exit();
     }
 }
