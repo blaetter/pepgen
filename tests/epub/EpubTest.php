@@ -1,8 +1,18 @@
 <?php
-use PHPUnit\Framework\TestCase;
 
-class EpubTest extends TestCase
+namespace Pepgen\Tests\epub;
+
+use Pepgen\Tests\BaseTest;
+
+class EpubTest extends BaseTest
 {
+    protected function setUp()
+    {
+        if (!file_exists(dirname(__FILE__) . '/../../epub/test.epub')) {
+            mkdir(dirname(__FILE__) . '/../../epub/test.epub');
+        }
+    }
+
     /**
      * @expectedException ErrorException
      */
@@ -10,5 +20,23 @@ class EpubTest extends TestCase
     {
         $epub = new \Pepgen\epub\Epub('', '', '');
         $epub->run();
+    }
+
+    public function testEpub()
+    {
+        // create testing epub id
+        $epub_id = 'test';
+        $secret = \Pepgen\helper\Config::get('secret');
+        $watermark = 'test';
+        $token = \Pepgen\helper\Tokenizer::tokenize($epub_id, $secret, $watermark);
+        $epub = new \Pepgen\epub\Epub($epub_id, $token, $watermark);
+        $epub->run();
+    }
+
+    protected function tearDown()
+    {
+        if (file_exists(dirname(__FILE__) . '/../../epub/test.epub')) {
+            rmdir(dirname(__FILE__) . '/../../epub/test.epub');
+        }
     }
 }
