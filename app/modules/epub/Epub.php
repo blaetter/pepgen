@@ -199,7 +199,7 @@ class Epub
      */
     private function verify()
     {
-         $this->logger->debug(
+        $this->logger->debug(
             'Verify: ',
             array(
                 'epub_id' => $this->epub_id,
