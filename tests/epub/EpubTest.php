@@ -22,6 +22,9 @@ class EpubTest extends BaseTest
         $epub->run();
     }
 
+    /**
+     * @expectedException ErrorException
+     */
     public function testEpub()
     {
         // create testing epub id
