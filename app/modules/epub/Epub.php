@@ -209,8 +209,7 @@ class Epub
             )
         );
        // If no information is provided or the information is invalid, cancel request at this point.
-        if (
-            empty($this->watermark) ||
+        if (empty($this->watermark) ||
             empty($this->epub_id) ||
             empty($this->token) ||
             $this->token !== Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark)
