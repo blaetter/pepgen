@@ -31,6 +31,6 @@
       "psr-4": { "Pepgen\\": "app/modules" }
   },
   "autoload-dev": {
-      "psr-4": { "Pepgen\\Tests\\" : "tests/epub" }
+      "psr-4": { "Pepgen\\Tests\\" : "tests" }
   }
 }
