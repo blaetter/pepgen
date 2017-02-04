@@ -16,11 +16,11 @@ class BaseTest extends TestCase
     protected function setUp()
     {
         $this->test_config_file = false;
-        if (!file_exists(dirname(__FILE__) . '/../../app/config/config.yml')) {
+        if (!file_exists(dirname(__FILE__) . '/../app/config/config.yml')) {
             $this->test_config_file = true;
             copy(
-                dirname(__FILE__) . '/../../app/config/sample.config.yml',
-                dirname(__FILE__) . '/../../app/config/config.yml'
+                dirname(__FILE__) . '/../app/config/sample.config.yml',
+                dirname(__FILE__) . '/../app/config/config.yml'
             );
         }
     }
@@ -29,8 +29,8 @@ class BaseTest extends TestCase
     {
         // if there is a config file and if we set it up fot testing
         // remove it.
-        if (file_exists(dirname(__FILE__) . '/../../app/config/config.yml') && true === $this->test_config_file) {
-            unlink(dirname(__FILE__) . '/../../app/config/config.yml');
+        if (file_exists(dirname(__FILE__) . '/../app/config/config.yml') && true === $this->test_config_file) {
+            unlink(dirname(__FILE__) . '/../app/config/config.yml');
         }
     }
 }
