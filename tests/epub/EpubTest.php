@@ -34,6 +34,7 @@ class EpubTest extends BaseTest
         $token = \Pepgen\helper\Tokenizer::tokenize($epub_id, $secret, $watermark);
         $epub = new \Pepgen\epub\Epub($epub_id, $token, $watermark);
         $epub->run();
+        $this->assertTrue($this->success);
     }
 
     protected function tearDown()
