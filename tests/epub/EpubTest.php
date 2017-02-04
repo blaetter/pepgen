@@ -50,13 +50,6 @@ class EpubTest extends BaseTest
         $this->assertTrue($epub->success);
     }
 
-    public function testFastrunPositive()
-    {
-        $epub = new \Pepgen\epub\Epub($this->epub_id, $this->token, $this->watermark);
-        $epub->fastrun();
-        $this->assertTrue($epub->success);
-    }
-
     protected function tearDown()
     {
         if (file_exists(dirname(__FILE__) . '/../../epub/test.epub')) {
