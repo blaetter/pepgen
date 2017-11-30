@@ -14,6 +14,8 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+;
 
 // project libraries to use
 use Pepgen\helper\Config;
@@ -157,6 +159,7 @@ class Epub
             array('epub_id' => $this->epub_id, 'token' => $this->token)
         );
         $this->message = 'Success';
+        return true;
     }
 
     /**
@@ -197,7 +200,7 @@ class Epub
      * This function verifies the request
      *
      */
-    private function verify()
+    public function verify()
     {
         $this->logger->debug(
             'Verify: ',
@@ -223,12 +226,12 @@ class Epub
      * First it looks for the requested epub mirrors it to the tmp directory
      *
      */
-    private function copy()
+    public function copy()
     {
         // check for needed files
         // if its not there the requests is per se not allowed
         if (!$this->filesystem->exists($this->epub_original_dir.$this->epub)) {
-            $this->deny('Requested ePub does not exist.');
+            $this->deny('Requested ePub does not exist: ' . $this->epub_original_dir.$this->epub);
         }
 
         // copy the original file to the target directory and rename it
@@ -248,7 +251,7 @@ class Epub
      * This function modifies the given epub and puts the watermark in it.
      *
      */
-    private function modify()
+    public function modify()
     {
         // now we need to try finding the requested files for modifications
         $this->finder = new Finder();
@@ -297,7 +300,7 @@ class Epub
      * This function processes the epub and puts it in the download directory
      *
      */
-    private function process()
+    public function process()
     {
         // lets start the process that handles the zipping
         $process = new Process(
@@ -316,7 +319,8 @@ class Epub
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $this->deny('Zipping went wrong. Could not create personalised ePub.');
+            throw new ProcessFailedException($process);
+            $this->deny('Zipping went wrong. Could not create personalised ePub: ' . $process->getErrorOutput());
         }
 
         if (!$this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
