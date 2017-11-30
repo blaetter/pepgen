@@ -3,6 +3,7 @@
 namespace Pepgen\Tests\epub;
 
 use Pepgen\Tests\BaseTest;
+use Symfony\Component\Filesystem\Filesystem;
 
 class EpubTest extends BaseTest
 {
@@ -19,8 +20,10 @@ class EpubTest extends BaseTest
         $this->secret = \Pepgen\helper\Config::get('secret');
         $this->watermark = 'test';
         $this->token = \Pepgen\helper\Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark);
-        if (!file_exists(dirname(__FILE__) . '/../../epub/test.epub')) {
-            mkdir(dirname(__FILE__) . '/../../epub/test.epub');
+        if (!file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
+            mkdir(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
+            file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/test.html', 'test');
+            file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/mimetype', 'test');
         }
     }
 
@@ -40,10 +43,18 @@ class EpubTest extends BaseTest
         $this->assertNotTrue($epub->success);
     }
 
-    /**
-     * @expectedException ErrorException
-     */
-    public function testEpub()
+    public function testFastrunPositive()
+    {
+        $epub = new \Pepgen\epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub->verify();
+        $epub->copy();
+        $epub->modify();
+        $epub->process();
+        $epub->fastrun();
+        $this->assertTrue($epub->success);
+    }
+
+    public function testEpubNegative()
     {
         $epub = new \Pepgen\epub\Epub($this->epub_id, $this->token, $this->watermark);
         $epub->run();
@@ -52,14 +63,15 @@ class EpubTest extends BaseTest
 
     protected function tearDown()
     {
-        if (file_exists(dirname(__FILE__) . '/../../epub/test.epub')) {
-            rmdir(dirname(__FILE__) . '/../../epub/test.epub');
+        $filesystem = new Filesystem();
+        if (file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
+            $filesystem->remove(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
         }
-        if (file_exists(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.test.epub')) {
-            rmdir(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.test.epub');
+        if (file_exists(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub')) {
+            $filesystem->remove(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub');
         }
-        if (file_exists(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.test.epub')) {
-            rmdir(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.test.epub');
+        if (file_exists(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub')) {
+            $filesystem->remove(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub');
         }
     }
 }
