@@ -17,10 +17,10 @@ all: #list all targets and run them.
 	@grep -E "^\w+:" Makefile | sort | perl -pe 's/^(\w+):([^\#]+)(\#\s*(.*))?/\1\n\t\4\n/'
 
 dev: # init development system
-	$(COMPOSER) update
+	$(COMPOSER) install
 
 live: # init live system, delete unnecessary libs
-	$(COMPOSER) update --no-dev
+	$(COMPOSER) install --no-dev
 
 fix: # automated repair of code smells
 	vendor/bin/phpcbf --standard=psr2 app/
