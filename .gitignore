@@ -1,3 +1,4 @@
+.DS_Store
 app/config/config.yml
 build/*
 composer.phar
