@@ -4,8 +4,8 @@ secret: MY_BIG_FAT_SECRET
 textpattern: /<!--WATERMARK-->/i
 template: <p>%s</p>
 files_to_replace: /(file_1|file_2).xhtml/i
-original_dir: /epub
-temp_dir: /tmp
-public_dir: /public/download
+epub_original_dir: /epub
+epub_temp_dir: /tmp
+epub_public_dir: /public/download
 # loglevel - @see RFC 5424
 loglevel: 100
