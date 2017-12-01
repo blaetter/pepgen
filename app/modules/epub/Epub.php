@@ -296,26 +296,20 @@ class Epub
         // lets start the process that handles the zipping
         $process = new Process(
             'cd '.
-            $this->epub_temp_dir.
-            $this->epub_personal.
-            ' && zip -0Xq '.
-            $this->epub_output_dir.
-            $this->epub_personal.
-            ' mimetype && zip -Xr9Dq '.
-            $this->epub_output_dir.
-            $this->epub_personal.
-            ' *'
+            $this->epub_temp_dir .
+            $this->epub_personal .
+            ' && zip -0Xq ' .
+            $this->epub_output_dir .
+            $this->epub_personal .
+            ' mimetype && zip -Xr9Dq ' .
+            $this->epub_output_dir .
+            $this->epub_personal . ' *'
         );
 
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+        if (!$process->isSuccessful() || !$this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
             $this->deny('Zipping went wrong. Could not create personalised ePub: ' . $process->getErrorOutput());
-        }
-
-        if (!$this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
-            $this->deny('personalized ePub could not be created. Please try again later.');
         }
     }
 }

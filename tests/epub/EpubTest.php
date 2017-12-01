@@ -72,6 +72,15 @@ class EpubTest extends BaseTest
         $this->assertTrue($epub->success);
     }
 
+    /**
+     * @expectedException ErrorException
+     */
+    public function testProcessNegatve()
+    {
+        $epub = new \Pepgen\epub\Epub('', '', '');
+        $epub->process();
+    }
+
     protected function tearDown()
     {
         $filesystem = new Filesystem();
