@@ -15,6 +15,7 @@ class EpubTest extends BaseTest
 
     protected function setUp()
     {
+        parent::setUp();
         // create testing epub id
         $this->epub_id = 'test';
         $this->secret = \Pepgen\helper\Config::get('secret');

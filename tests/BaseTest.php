@@ -18,18 +18,14 @@ class BaseTest extends TestCase
         $this->test_config_file = false;
         if (!file_exists(dirname(__FILE__) . '/../app/config/config.yml')) {
             $this->test_config_file = true;
-            copy(
-                dirname(__FILE__) . '/../app/config/sample.config.yml',
-                dirname(__FILE__) . '/../app/config/config.yml'
-            );
             // Change standard parameters from file to some useful parameters
             file_put_contents(
                 dirname(__FILE__) . '/../app/config/config.yml',
                 str_replace(
-                    '/path/to/file',
-                    dirname(__FILE__),
+                    '/path/to/pepgen',
+                    dirname(__FILE__) . '/..',
                     file_get_contents(
-                        dirname(__FILE__) . '/../app/config/config.yml'
+                        dirname(__FILE__) . '/../app/config/sample.config.yml'
                     )
                 )
             );
