@@ -8,5 +8,5 @@ before_script:
   - make dev
 script:
   - make test
-after_script:
-  - php vendor/bin/coveralls
+after_success:
+  - travis_retry php vendor/bin/coveralls
