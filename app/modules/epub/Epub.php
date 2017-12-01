@@ -59,6 +59,8 @@ class Epub
 
     private $logger;
 
+    private $debugging_info;
+
     public function __construct($epub_id, $token, $watermark)
     {
         // success is false by default, switches to true on success
@@ -105,6 +107,14 @@ class Epub
 
         // the directory where the user specific epubs are copied to and processed
         $this->epub_temp_dir = $this->base_dir.'/tmp/';
+
+        // create a debugging information array
+        $this->debugging_info = [
+            'epub_id' => $this->epub_id,
+            'token' => $this->token,
+            'files' => $this->files_to_replace,
+            'pattern' => $this->textpattern
+        ];
 
         // creating instance of filesystem
         $this->filesystem = new Filesystem();
@@ -170,10 +180,7 @@ class Epub
     public function deny($msg = '')
     {
         // log bad request
-        $this->logger->info(
-            'Denied: ' . $msg,
-            array('epub_id' => $this->epub_id, 'token' => $this->token)
-        );
+        $this->logger->info('Denied: ' . $msg, $this->debugging_info);
         // send error message to end user
         $this->message = 'Something went wrong: ' . $msg;
         // because of previous errors, we need to end the run() here
@@ -190,7 +197,7 @@ class Epub
         if ($this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
             $this->logger->info(
                 'Fastrun: Found previously generated file.',
-                array('epub_id' => $this->epub_id, 'token' => $this->token)
+                $this->debugging_info
             );
             $this->success();
         }
@@ -204,12 +211,7 @@ class Epub
     {
         $this->logger->debug(
             'Verify: ',
-            array(
-                'epub_id' => $this->epub_id,
-                'token' => $this->token,
-                'watermark' => $this->watermark,
-                'tokenize' => Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark),
-            )
+            $this->debugging_info
         );
         // If no information is provided or the information is invalid, cancel request at this point.
         if (empty($this->watermark) ||
@@ -258,22 +260,11 @@ class Epub
         $this->finder->files()->name($this->files_to_replace)->in($this->epub_temp_dir.$this->epub_personal);
 
         // log into debug stream
-        $this->logger->debug(
-            'Modify: Checking for files.',
-            array('epub_id' => $this->epub_id, 'token' => $this->token, 'files' => $this->files_to_replace)
-        );
+        $this->logger->debug('Modify: Checking for files.', $this->debugging_info);
 
         foreach ($this->finder as $file) {
             // log into debug stream
-            $this->logger->debug(
-                'Modify: Found file: ' . $file,
-                array(
-                    'epub_id' => $this->epub_id,
-                    'token' => $this->token,
-                    'files' => $this->files_to_replace,
-                    'pattern' => $this->textpattern
-                )
-            );
+            $this->logger->debug('Modify: Found file: ' . $file, $this->debugging_info);
 
             // get the files content
             $original_content = $file->getContents();
