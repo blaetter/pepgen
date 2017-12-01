@@ -23,8 +23,7 @@ if (isset($request['watermark'])) {
 $epub = new \Pepgen\epub\Epub($epub_id, $token, $watermark);
 try {
     $epub->run();
-}
-catch (ErrorException $e) {
+} catch (ErrorException $e) {
     // set bad request header
     header("HTTP/1.0 400 Bad Request");
 }

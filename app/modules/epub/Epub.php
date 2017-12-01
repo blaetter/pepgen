@@ -15,7 +15,6 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-;
 
 // project libraries to use
 use Pepgen\helper\Config;
