@@ -32,6 +32,15 @@ class EpubTest extends BaseTest
     /**
      * @expectedException ErrorException
      */
+    public function testCopyNegative()
+    {
+        $epub = new \Pepgen\epub\Epub('', '', '');
+        $epub->copy();
+    }
+
+    /**
+     * @expectedException ErrorException
+     */
     public function testEpubEmty()
     {
         $epub = new \Pepgen\epub\Epub('', '', '');
