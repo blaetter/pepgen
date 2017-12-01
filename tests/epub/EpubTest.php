@@ -86,13 +86,13 @@ class EpubTest extends BaseTest
     {
         $filesystem = new Filesystem();
         if (file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
-            #$filesystem->remove(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
+            $filesystem->remove(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
         }
         if (file_exists(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub')) {
-            #$filesystem->remove(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub');
+            $filesystem->remove(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub');
         }
         if (file_exists(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub')) {
-           # $filesystem->remove(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub');
+            $filesystem->remove(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub');
         }
     }
 }
