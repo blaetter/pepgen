@@ -7,7 +7,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class EpubTest extends BaseTest
 {
-
+    protected $config;
     protected $epub_id;
     protected $secret;
     protected $token;
@@ -16,9 +16,10 @@ class EpubTest extends BaseTest
     protected function setUp()
     {
         parent::setUp();
+        $this->config = new \Pepgen\helper\Config();
         // create testing epub id
         $this->epub_id = 'test';
-        $this->secret = \Pepgen\helper\Config::get('secret');
+        $this->secret = $this->config->get('secret');
         $this->watermark = 'test';
         $this->token = \Pepgen\helper\Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark);
         if (!file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
@@ -85,13 +86,13 @@ class EpubTest extends BaseTest
     {
         $filesystem = new Filesystem();
         if (file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
-            $filesystem->remove(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
+            #$filesystem->remove(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
         }
         if (file_exists(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub')) {
-            $filesystem->remove(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub');
+            #$filesystem->remove(dirname(__FILE__) . '/../../tmp/' .  $this->token . '.' . $this->epub_id . '.epub');
         }
         if (file_exists(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub')) {
-            $filesystem->remove(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub');
+           # $filesystem->remove(dirname(__FILE__) . '/../../public/download/' .  $this->token . '.' . $this->epub_id . '.epub');
         }
     }
 }

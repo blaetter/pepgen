@@ -8,11 +8,15 @@ use Symfony\Component\Yaml\Yaml;
 
 class Config
 {
-  /**
-   * Handles config object
-   *
-   */
-    private static function getConfig()
+
+    private $config;
+
+    public function __construct()
+    {
+        $this->config = $this->getConfig();
+    }
+
+    private function getConfig()
     {
         $configFinder = new Finder();
 
@@ -27,11 +31,10 @@ class Config
         return YAML::parse(implode('\r\n', $configs));
     }
 
-    public static function get($key)
+    public function get($key)
     {
-        $config = self::getConfig();
-        if (isset($config[$key])) {
-            return $config[$key];
+        if (isset($this->config[$key])) {
+            return $this->config[$key];
         }
         return false;
     }

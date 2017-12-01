@@ -26,9 +26,7 @@ class Epub
 
     public $message;
 
-    private $http_base;
-
-    private $base_dir;
+    private $config;
 
     private $watermark;
 
@@ -36,15 +34,7 @@ class Epub
 
     private $token;
 
-    private $secret;
-
     private $epub;
-
-    private $epub_original_dir;
-
-    private $epub_output_dir;
-
-    private $epub_temp_dir;
 
     private $textpattern;
 
@@ -65,23 +55,16 @@ class Epub
         // success is false by default, switches to true on success
         $this->success = false;
 
-        // http base for everything
-        $this->http_base = Config::get('http_base');
-
-        // the absolute base path of the application
-        $this->base_dir = Config::get('base_path');
+        $this->config = new Config();
 
         // the textpattern that is searched for in the epubs
-        $this->textpattern = Config::get('textpattern');
+        $this->textpattern = $this->config->get('textpattern');
 
         // the template the textpattern is replaced with
-        $this->template = Config::get('template');
-
-        // the secret key for generating the token
-        $this->secret = Config::get('secret');
+        $this->template = $this->config->get('template');
 
         // the regexp for the files we have to replace text in
-        $this->files_to_replace = Config::get('files_to_replace');
+        $this->files_to_replace = $this->config->get('files_to_replace');
 
         // the id of the requested ePub
         $this->epub_id = $epub_id;
@@ -97,15 +80,6 @@ class Epub
 
         // the name of the personal epub - the name should be the ordinary epub name plus the token
         $this->epub_personal = $this->token . '.' . $this->epub;
-
-        // the directory where the original epub-folders are stored - uncompressed and not accessable from the web
-        $this->epub_original_dir = $this->base_dir.'/epub/';
-
-        // the directory where the generated epubs will be stored until they're delivered to the end user
-        $this->epub_output_dir = $this->base_dir.'/public/download/';
-
-        // the directory where the user specific epubs are copied to and processed
-        $this->epub_temp_dir = $this->base_dir.'/tmp/';
 
         // create a debugging information array
         $this->debugging_info = [
@@ -124,7 +98,7 @@ class Epub
         $this->logger->pushHandler(
             new RotatingFileHandler(
                 __DIR__.'/../../../logs/application.log',
-                Config::get('loglevel')
+                $this->config->get('loglevel')
             )
         );
     }
@@ -165,7 +139,7 @@ class Epub
         // log success into info stream
         $this->logger->info(
             'Success: epub ready for download.',
-            array('epub_id' => $this->epub_id, 'token' => $this->token)
+            $this->debugging_info
         );
         $this->message = 'Success';
         return true;
@@ -193,7 +167,7 @@ class Epub
     public function fastrun()
     {
         // check for needed files
-        if ($this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
+        if ($this->filesystem->exists($this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' . $this->epub_personal)) {
             $this->logger->info(
                 'Fastrun: Found previously generated file.',
                 $this->debugging_info
@@ -216,7 +190,7 @@ class Epub
         if (empty($this->watermark) ||
             empty($this->epub_id) ||
             empty($this->token) ||
-            $this->token !== Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark)
+            $this->token !== Tokenizer::tokenize($this->epub_id, $this->config->get('secret'), $this->watermark)
         ) {
             $this->deny('Not enough arguments or wrong arguments.');
         }
@@ -231,15 +205,22 @@ class Epub
     {
         // check for needed files
         // if its not there the requests is per se not allowed
-        if (!$this->filesystem->exists($this->epub_original_dir.$this->epub)) {
-            $this->deny('Requested ePub does not exist: ' . $this->epub_original_dir.$this->epub);
+        if (
+            !$this->filesystem->exists(
+                $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
+            )
+        ) {
+            $this->deny(
+                'Requested ePub does not exist: ' .
+                $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
+            );
         }
 
         // copy the original file to the target directory and rename it
         try {
             $this->filesystem->mirror(
-                $this->epub_original_dir.$this->epub,
-                $this->epub_temp_dir.$this->epub_personal,
+                $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub,
+                $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' . $this->epub_personal,
                 null,
                 array('override' => true)
             );
@@ -256,7 +237,9 @@ class Epub
     {
         // now we need to try finding the requested files for modifications
         $this->finder = new Finder();
-        $this->finder->files()->name($this->files_to_replace)->in($this->epub_temp_dir.$this->epub_personal);
+        $this->finder->files()->name($this->files_to_replace)->in(
+            $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' . $this->epub_personal
+        );
 
         // log into debug stream
         $this->logger->debug('Modify: Checking for files.', $this->debugging_info);
@@ -295,19 +278,24 @@ class Epub
         // lets start the process that handles the zipping
         $process = new Process(
             'cd '.
-            $this->epub_temp_dir .
+            $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' .
             $this->epub_personal .
             ' && zip -0Xq ' .
-            $this->epub_output_dir .
+            $this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' .
             $this->epub_personal .
             ' mimetype && zip -Xr9Dq ' .
-            $this->epub_output_dir .
+            $this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' .
             $this->epub_personal . ' *'
         );
 
         $process->run();
 
-        if (!$process->isSuccessful() || !$this->filesystem->exists($this->epub_output_dir.$this->epub_personal)) {
+        if (
+            !$process->isSuccessful() ||
+            !$this->filesystem->exists(
+                $this->config->get('base_path') . $this->config->get('epub_public_dir') . '/' . $this->epub_personal
+            )
+        ) {
             $this->deny('Zipping went wrong. Could not create personalised ePub: ' . $process->getErrorOutput());
         }
     }
