@@ -23,7 +23,8 @@ class EpubTest extends BaseTest
         $this->token = \Pepgen\helper\Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark);
         if (!file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
             mkdir(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
-            file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/test.html', 'test');
+            file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/file_1.xhtml', 'test');
+            file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/file_2.xhtml', 'test');
             file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/mimetype', 'test');
         }
     }
