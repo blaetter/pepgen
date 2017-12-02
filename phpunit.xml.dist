@@ -13,8 +13,8 @@
 >
     <testsuites>
         <testsuite name="PePGen Test Suite">
-            <directory>./tests/epub</directory>
-            <directory>./tests/helper</directory>
+            <directory>./tests/Epub</directory>
+            <directory>./tests/Helper</directory>
         </testsuite>
     </testsuites>
     <filter>

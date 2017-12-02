@@ -3,7 +3,7 @@
 namespace Pepgen\Tests\helper;
 
 use Pepgen\Tests\BaseTest;
-use Pepgen\helper\Config;
+use Pepgen\Helper\Config;
 
 class ConfigTest extends BaseTest
 {

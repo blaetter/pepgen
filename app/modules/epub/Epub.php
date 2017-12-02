@@ -5,7 +5,7 @@
  * handles epub stuff
  */
 
-namespace Pepgen\epub;
+namespace Pepgen\Epub;
 
 // vendor libraries to use
 use Monolog\Logger;
@@ -15,10 +15,8 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-
-// project libraries to use
-use Pepgen\helper\Config;
-use Pepgen\helper\Tokenizer;
+use Pepgen\Helper\Config;
+use Pepgen\Helper\Tokenizer;
 
 class Epub
 {

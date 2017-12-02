@@ -1,6 +1,6 @@
 <?php
 
-namespace Pepgen\helper;
+namespace Pepgen\Helper;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;

@@ -12,7 +12,7 @@ class TokenizeTest extends TestCase
         $id = 'id';
         $secret = 'secret';
         $watermark = 'watermark';
-        $token = \Pepgen\helper\Tokenizer::tokenize($id, $secret, $watermark);
+        $token = \Pepgen\Helper\Tokenizer::tokenize($id, $secret, $watermark);
         $this->assertEquals($token, md5(
             $id.
             $secret.
