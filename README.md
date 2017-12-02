@@ -36,7 +36,10 @@ You need to configure the following parameters that are located in the `app/conf
 4. `textpattern` - The textpattern that is located in your original ePubs e.g. `<!-- WATERMARK -->` or `XXX_WATERMARK_XXX`. Should be very unique. Has to contain delemiters because I don't know what characters you want to use.
 5. `template` - The template the textpattern is replaced by. It should contain a `%s` pattern so the watermark can be put into it
 6. `files_to_replace` a string of files where the watermark can be found in. Maybe you want to put the watermark in more than one file? Should either be a full filename or a regular expression including the delemiters.
-7. `loglevel` a RFC 5424 numeric loglevel.
+7. `epub_original_dir` the source directory where you have to place the untouched epubs, e.g. `/epub`
+8. `epub_temp_dir` the temp directory for creating the epubs, e.g. `/tmp`
+9. `epub_public_dir` the directory where the personal epubs will be moved to, e.g. `/public/download`
+10. `loglevel` a RFC 5424 numeric loglevel.
 
 
 ## Usage
@@ -57,10 +60,10 @@ Your website or shop can now decide how to deliver that to your costumer, there 
 
 ## Further plans
 
-1. add logging
+1. ~~add logging~~
 2. add console actions for maintaing the application
-3. add console actions for deleting tmp/* and public/download/* after 24 hours
-4. add tests :)
+3. ~~add console actions for deleting tmp/* and public/download/* after 24 hours~~
+4. ~~add tests :)~~
 
 ## Disclaimer
 
