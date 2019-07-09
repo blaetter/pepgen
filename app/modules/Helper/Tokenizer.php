@@ -6,7 +6,7 @@
  *
  */
 
-namespace Pepgen\helper;
+namespace Pepgen\Helper;
 
 class Tokenizer
 {

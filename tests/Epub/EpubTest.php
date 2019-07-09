@@ -1,6 +1,6 @@
 <?php
 
-namespace Pepgen\Tests\epub;
+namespace Pepgen\Tests\Epub;
 
 use Pepgen\Tests\BaseTest;
 use Symfony\Component\Filesystem\Filesystem;
@@ -16,12 +16,12 @@ class EpubTest extends BaseTest
     protected function setUp(): void
     {
         parent::setUp();
-        $this->config = new \Pepgen\helper\Config();
+        $this->config = new \Pepgen\Helper\Config();
         // create testing epub id
         $this->epub_id = 'test';
         $this->secret = $this->config->get('secret');
         $this->watermark = 'test';
-        $this->token = \Pepgen\helper\Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark);
+        $this->token = \Pepgen\Helper\Tokenizer::tokenize($this->epub_id, $this->secret, $this->watermark);
         if (!file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {
             mkdir(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub');
             file_put_contents(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub/file_1.xhtml', 'test');
@@ -35,7 +35,7 @@ class EpubTest extends BaseTest
      */
     public function testCopyNegative()
     {
-        $epub = new \Pepgen\epub\Epub('', '', '');
+        $epub = new \Pepgen\Epub\Epub('', '', '');
         $epub->copy();
     }
 
@@ -44,20 +44,20 @@ class EpubTest extends BaseTest
      */
     public function testEpubEmty()
     {
-        $epub = new \Pepgen\epub\Epub('', '', '');
+        $epub = new \Pepgen\Epub\Epub('', '', '');
         $epub->run();
     }
 
     public function testFastrunNegative()
     {
-        $epub = new \Pepgen\epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub = new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark);
         $epub->fastrun();
         $this->assertNotTrue($epub->success);
     }
 
     public function testFastrunPositive()
     {
-        $epub = new \Pepgen\epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub = new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark);
         $epub->verify();
         $epub->copy();
         $epub->modify();
@@ -68,7 +68,7 @@ class EpubTest extends BaseTest
 
     public function testEpubNegative()
     {
-        $epub = new \Pepgen\epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub = new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark);
         $epub->run();
         $this->assertTrue($epub->success);
     }
@@ -78,7 +78,7 @@ class EpubTest extends BaseTest
      */
     public function testProcessNegatve()
     {
-        $epub = new \Pepgen\epub\Epub('', '', '');
+        $epub = new \Pepgen\Epub\Epub('', '', '');
         $epub->process();
     }
 
