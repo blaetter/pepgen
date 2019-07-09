@@ -12,7 +12,7 @@
   "minimum-stability": "beta",
   "require": {
       "monolog/monolog": "^1.0",
-      "php": ">7.0",
+      "php": ">7.1",
       "symfony/finder": "@stable",
       "symfony/debug": "@stable",
       "symfony/filesystem": "@stable",
