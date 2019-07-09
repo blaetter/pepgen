@@ -9,7 +9,7 @@ class ConfigTest extends BaseTest
 {
     private $config;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new Config();
     }

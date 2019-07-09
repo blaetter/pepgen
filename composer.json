@@ -3,7 +3,6 @@
   "type": "project",
   "version": "2.0.0-dev",
   "description": "Personalized ePub Generation",
-  "website": "https://github.com/blaetter/pepgen",
   "authors": [
       {
         "name": "Andreas Mängel"

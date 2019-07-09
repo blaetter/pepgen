@@ -13,7 +13,7 @@ class EpubTest extends BaseTest
     protected $token;
     protected $watermark;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->config = new \Pepgen\helper\Config();
@@ -82,7 +82,7 @@ class EpubTest extends BaseTest
         $epub->process();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $filesystem = new Filesystem();
         if (file_exists(dirname(__FILE__) . '/../../epub/' . $this->epub_id . '.epub')) {

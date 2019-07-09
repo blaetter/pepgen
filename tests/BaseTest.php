@@ -13,7 +13,7 @@ class BaseTest extends TestCase
     // automated testing build where we don't have a set up config.
     protected $test_config_file;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->test_config_file = false;
         if (!file_exists(dirname(__FILE__) . '/../app/config/config.yml')) {
@@ -32,7 +32,7 @@ class BaseTest extends TestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         // if there is a config file and if we set it up fot testing
         // remove it.
