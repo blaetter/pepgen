@@ -1,5 +1,5 @@
 {
-  "name": "blaetter/PePGen",
+  "name": "blaetter/pepgen",
   "type": "project",
   "version": "2.0.0-dev",
   "description": "Personalized ePub Generation",
@@ -24,7 +24,7 @@
       "phpunit/phpunit": "@stable",
       "phpmd/phpmd": "@stable",
       "squizlabs/php_codesniffer": "@stable",
-      "satooshi/php-coveralls": "@stable"
+      "php-coveralls/php-coveralls": "@stable"
   },
   "autoload": {
       "psr-4": { "Pepgen\\": "app/modules" }
