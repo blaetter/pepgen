@@ -15,7 +15,7 @@ class ClearCommandTest extends BaseTest
     private $temp_dir;
     private $public_dir;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->config = new \Pepgen\Helper\Config();
@@ -94,7 +94,7 @@ class ClearCommandTest extends BaseTest
         $this->assertFalse($this->filesystem->exists($this->public_dir . '/test_new.epub'));
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         // In case there was something wrong with the tests, remove the files by hand.
         $this->filesystem->remove($this->temp_dir . '/test_new.epub');

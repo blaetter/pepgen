@@ -17,7 +17,7 @@ class ConfigTest extends BaseTest
     {
         $base_path = $this->config->get('base_path');
         // base_path has a / in it.
-        $this->assertContains('/', $base_path);
+        $this->assertStringContainsString('/', $base_path);
     }
 
     public function testGetConfigNegative()

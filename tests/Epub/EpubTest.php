@@ -31,20 +31,22 @@ class EpubTest extends BaseTest
     }
 
     /**
-     * @expectedException ErrorException
+     *
      */
     public function testCopyNegative()
     {
         $epub = new \Pepgen\Epub\Epub('', '', '');
+        $this->expectException(\ErrorException::class);
         $epub->copy();
     }
 
     /**
-     * @expectedException ErrorException
+     *
      */
     public function testEpubEmty()
     {
         $epub = new \Pepgen\Epub\Epub('', '', '');
+        $this->expectException(\ErrorException::class);
         $epub->run();
     }
 
@@ -74,11 +76,12 @@ class EpubTest extends BaseTest
     }
 
     /**
-     * @expectedException ErrorException
+     *
      */
     public function testProcessNegatve()
     {
         $epub = new \Pepgen\Epub\Epub('', '', '');
+        $this->expectException(\ErrorException::class);
         $epub->process();
     }
 
