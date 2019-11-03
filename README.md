@@ -3,7 +3,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/blaetter/pepgen/badge.svg)](https://coveralls.io/github/blaetter/pepgen)
 [![Build Status](https://travis-ci.org/blaetter/pepgen.svg)](https://travis-ci.org/blaetter/pepgen)
 [![Code Climate](https://codeclimate.com/github/blaetter/pepgen/badges/gpa.svg)](https://codeclimate.com/github/blaetter/pepgen)
-[![Known Vulnerabilities](https://snyk.io/test/github/blaetter/pepgen/badge.svg?targetFile=composer.lock)](https://snyk.io/test/github/blaetter/pepgen?targetFile=composer.lock)
 
 ## Introduction
 
