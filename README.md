@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/blaetter/pepgen/badge.svg)](https://coveralls.io/github/blaetter/pepgen)
 [![Build Status](https://travis-ci.org/blaetter/pepgen.svg)](https://travis-ci.org/blaetter/pepgen)
 [![Code Climate](https://codeclimate.com/github/blaetter/pepgen/badges/gpa.svg)](https://codeclimate.com/github/blaetter/pepgen)
-[![Dependency Status](https://www.versioneye.com/user/projects/588d03ccbe496c003dcdc006/badge.svg)](https://www.versioneye.com/user/projects/588d03ccbe496c003dcdc006)
+[![Known Vulnerabilities](https://snyk.io/test/github/blaetter/pepgen/badge.svg?targetFile=composer.lock)](https://snyk.io/test/github/blaetter/pepgen?targetFile=composer.lock)
 
 ## Introduction
 
@@ -41,7 +41,6 @@ You need to configure the following parameters that are located in the `app/conf
 9. `epub_public_dir` the directory where the personal epubs will be moved to, e.g. `/public/download`
 10. `loglevel` a RFC 5424 numeric loglevel.
 
-
 ## Usage
 
 After setting up the application you can call it via a browser. The application needs the following parameters:
@@ -58,12 +57,17 @@ Your website or shop can now decide how to deliver that to your costumer, there 
 2. Your website or shop does a server request to the generated ePub and streames it to the end user. Using this method, your customer will receive the ePub directly from your website or shop. This version is more secure.
 3. If your website or shop and this application are on the same server, things are much easier for you. You can implement this application directly into your website or shop or you can generate the personalized ePubs directly into a public folder of your website or shop.
 
-## Further plans
+## Maintenance
 
-1. ~~add logging~~
-2. add console actions for maintaing the application
-3. ~~add console actions for deleting tmp/* and public/download/* after 24 hours~~
-4. ~~add tests :)~~
+Pepgen is shipped with a command line tool at `bin/console` which can help you to clear the generated files. Check out `bin/console list` for a list of available commands.
+
+You might want to use theese commands to interact with Pepgen on a regular basis, e.g. via cron. Something like `bin/console clear temp` could be executed every night depending on your traffic.
+
+## Development
+
+Feel free to change Pepgen to your needs, PRs are welcome. Please test your change and stay close to standards regarding code climate, editor config and code styles.
+
+You might want to use the convinient shortcuts like `make dev`, `make test` oder `make fix`. Take a look into the Makefile for further information.
 
 ## Disclaimer
 
