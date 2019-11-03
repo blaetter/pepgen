@@ -59,9 +59,13 @@ Your website or shop can now decide how to deliver that to your costumer, there 
 
 ## Maintenance
 
-Pepgen is shipped with a command line tool at `bin/console` which can help you to clear the generated files. Check out `bin/console list` for a list of available commands.
+Pepgen is shipped with a command line tool at `bin/console` which can help you to clear the generated files. Check out `bin/console list` for a list of available commands and options.
 
 You might want to use theese commands to interact with Pepgen on a regular basis, e.g. via cron. Something like `bin/console clear temp` could be executed every night depending on your traffic.
+
+## Logging
+
+Depending on your configuration there is more or less logging saved into the log folder. Application logs are rotated once per day, but you might want to use the console command `bin/console clear logs` to get rid of old logfiles as well.
 
 ## Development
 
