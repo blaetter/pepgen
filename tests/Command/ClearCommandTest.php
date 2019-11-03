@@ -41,6 +41,11 @@ class ClearCommandTest extends BaseTest
         $this->filesystem->touch($this->log_dir . '/test_old.log', $old_timestamp);
     }
 
+    /**
+     * Test the dry-run option - no files should be deleted.
+     *
+     * @return void
+     */
     public function testExecuteDeleteTempDryRun()
     {
         $application = new Application();
@@ -60,6 +65,12 @@ class ClearCommandTest extends BaseTest
         );
     }
 
+    /**
+     * Test the --days option. As specified, only the file older then 12 days
+     * which is none, so all files should stay.
+     *
+     * @return void
+     */
     public function testExecuteDeleteTempDaysOlder()
     {
         $application = new Application();
@@ -79,6 +90,12 @@ class ClearCommandTest extends BaseTest
         );
     }
 
+    /**
+     * Test the --days option. As specified, only the file older then 8 days
+     * which is the test_really_old-epub should be deleted
+     *
+     * @return void
+     */
     public function testExecuteDeleteTempDaysNewer()
     {
         $application = new Application();
@@ -98,6 +115,12 @@ class ClearCommandTest extends BaseTest
         );
     }
 
+    /**
+     * Test the deletion of the standard case temp dir. Old file should be deleted
+     * new ones not.
+     *
+     * @return void
+     */
     public function testExecuteDeleteTemp()
     {
         $application = new Application();
@@ -115,7 +138,11 @@ class ClearCommandTest extends BaseTest
         );
     }
 
-
+    /**
+     * Test the deletion of the standard case temp dir. All files should be removed.
+     *
+     * @return void
+     */
     public function testExecuteDeleteAllTemp()
     {
         $application = new Application();
@@ -131,6 +158,12 @@ class ClearCommandTest extends BaseTest
         $this->assertFalse($this->filesystem->exists($this->temp_dir . '/test_new.epub'));
     }
 
+    /**
+     * Test the deletion of the standard case public dir. Old file should be deleted
+     * new ones not.
+     *
+     * @return void
+     */
     public function testExecuteDeletePublic()
     {
         $application = new Application();
@@ -148,6 +181,11 @@ class ClearCommandTest extends BaseTest
         );
     }
 
+    /**
+     * Test the deletion of the standard case public dir. All files should be removed.
+     *
+     * @return void
+     */
     public function testExecuteDeleteAllPublic()
     {
         $application = new Application();
@@ -163,6 +201,12 @@ class ClearCommandTest extends BaseTest
         $this->assertFalse($this->filesystem->exists($this->public_dir . '/test_new.epub'));
     }
 
+    /**
+     * Test the deletion of the standard case logs dir. Old file should be deleted
+     * new ones not.
+     *
+     * @return void
+     */
     public function testExecuteDeleteLogs()
     {
         $application = new Application();
@@ -180,6 +224,11 @@ class ClearCommandTest extends BaseTest
         );
     }
 
+    /**
+     * Test the deletion of the standard case logs dir. All files should be removed.
+     *
+     * @return void
+     */
     public function testExecuteDeleteAllLogs()
     {
         $application = new Application();
