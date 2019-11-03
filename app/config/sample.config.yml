@@ -4,7 +4,7 @@ secret: MY_BIG_FAT_SECRET
 textpattern: /<!--WATERMARK-->/i
 template: <p>%s</p>
 files_to_replace: /(file_1|file_2).xhtml/i
-epub_log_dir: /log
+epub_log_dir: /logs
 epub_original_dir: /epub
 epub_temp_dir: /tmp
 epub_public_dir: /public/download
