@@ -15,11 +15,16 @@ use Pepgen\Helper\Config;
 class ClearCommand extends Command
 {
     public $config;
+    private $filesystem;
+    private $finder;
+    private $file_identifier;
 
     public function __construct()
     {
         parent::__construct();
         $this->config = new Config();
+        $this->filesystem = new Filesystem();
+        $this->finder = new Finder();
     }
 
     protected function configure()
@@ -77,55 +82,66 @@ class ClearCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filesystem = new Filesystem();
-        $finder = new Finder();
-        $file_identifier = '*.epub';
-        // set the directory depending on the given target
-        if ('temp' == $input->getArgument('target')) {
-            $target_dir = $this->config->get('base_path') . $this->config->get('epub_temp_dir');
-        } elseif ('public' == $input->getArgument('target')) {
-            $target_dir = $this->config->get('base_path') . $this->config->get('epub_public_dir');
-        } elseif ('logs' == $input->getArgument('target')) {
-            $target_dir = $this->config->get('base_path') . $this->config->get('epub_log_dir');
-            $file_identifier = '*.log';
-        } else {
+        // set default file identifier to epub file extension.
+        $this->file_identifier = '*.epub';
+
+        // get the target dir based on given target
+        $target_dir = $this->getTargetDir($input->getArgument('target'));
+
+        // check if target dir is set properly, return otherwise
+        if (null === $target_dir || !$this->filesystem->exists($target_dir)) {
             $output->writeln(
-                'Argument should be one of temp, public or logs'
+                'No valid argument provided or target dir not existing'
             );
             return false;
         }
 
-        // decide, which files should be deleted.
-        if ($input->getOption('all')) {
-            $finder->files()->name($file_identifier);
-        } elseif ($input->getOption('days') && 0 < $input->getOption('days')) {
-            $finder->files()->name($file_identifier)->date('< ' . $input->getOption('days') . ' days ago');
-        } else {
-            $finder->files()->name($file_identifier)->date('< 7 days ago');
+        // apply file identifier to finder
+        $this->finder->files()->name($this->file_identifier);
+        // check if we need to limit the files beeing selected, this should either be with the --all flag or via --days
+        if ($input->getOption('days') && 0 < $input->getOption('days')) {
+            // in this case we need to set the number of days where files will be kept accoring to the given number
+            $this->finder->date('< ' . $input->getOption('days') . ' days ago');
+        } elseif (false === $input->getOption('all')) {
+            // in this case we use a standard of 7 days as long as --all is not set.
+            $this->finder->date('< 7 days ago');
         }
 
-        if ($filesystem->exists($target_dir)) {
-            // set the finder to the actually wanted files
-            $finder->in($target_dir);
+        // set the finder to the actually wanted files
+        $this->finder->in($target_dir);
 
-            // check for dry-run
-            if ($input->getOption('dry-run')) {
-                // in dry-run, only display the files
-                $output->writeln('dry-run, printing files that matches given criteria');
-                foreach ($finder as $file) {
-                    $output->writeln($file);
-                }
-            } else {
-                // delete the files, if no dry-run is specified.
-                try {
-                    $filesystem->remove($finder->in($target_dir));
-                } catch (IOException $e) {
-                    $output->writeln(
-                        'Something went wrong: ' . $e->getMessage(),
-                        OutputInterface::VERBOSITY_VERBOSE
-                    );
-                }
+        // check for dry-run
+        if ($input->getOption('dry-run')) {
+            // in dry-run, only display the files
+            $output->writeln('dry-run, printing files that matches given criteria');
+            foreach ($this->finder as $file) {
+                $output->writeln($file);
             }
+            return false;
         }
+
+        // delete the files, if no dry-run is specified.
+        try {
+            $this->filesystem->remove($this->finder);
+        } catch (IOException $e) {
+            $output->writeln(
+                'Something went wrong: ' . $e->getMessage(),
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+        }
+    }
+
+    protected function getTargetDir($target)
+    {
+        // set the directory depending on the given target
+        if ('temp' == $target) {
+            return $this->config->get('base_path') . $this->config->get('epub_temp_dir');
+        } elseif ('public' == $target) {
+            return $this->config->get('base_path') . $this->config->get('epub_public_dir');
+        } elseif ('logs' == $target) {
+            $this->file_identifier = '*.log';
+            return $this->config->get('base_path') . $this->config->get('epub_log_dir');
+        }
+        return null;
     }
 }
