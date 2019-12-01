@@ -66,6 +66,25 @@ class ClearCommandTest extends BaseTest
     }
 
     /**
+     * Test if the target dir fallback to null works
+     *
+     * @return void
+     */
+    public function testExecuteDeleteEmptyTargetDir()
+    {
+        $application = new Application();
+        $application->add(new ClearCommand());
+
+        $command = $application->find('clear');
+        $commandTester = new CommandTester($command);
+        $result = $commandTester->execute(array(
+            'command'   => $command->getName(),
+            'target'    => 'invalid_target_name',
+        ));
+        $this->assertEquals(1, $result);
+    }
+
+    /**
      * Test the --days option. As specified, only the file older then 12 days
      * which is none, so all files should stay.
      *
