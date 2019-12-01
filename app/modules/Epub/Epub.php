@@ -165,7 +165,7 @@ class Epub
     public function fastrun()
     {
         // check for needed files
-        if ($this->filesystem->exists($this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' . $this->epub_personal)) {
+        if ($this->filesystem->exists($this->getPublicEpubPath())) {
             $this->logger->info(
                 'Fastrun: Found previously generated file.',
                 $this->debugging_info
@@ -204,19 +204,19 @@ class Epub
         // check for needed files
         // if its not there the requests is per se not allowed
         if (!$this->filesystem->exists(
-            $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
+            $this->getOriginalEpubPath()
         )) {
             $this->deny(
                 'Requested ePub does not exist: ' .
-                $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
+                $this->getOriginalEpubPath()
             );
         }
 
         // copy the original file to the target directory and rename it
         try {
             $this->filesystem->mirror(
-                $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub,
-                $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' . $this->epub_personal,
+                $this->getOriginalEpubPath(),
+                $this->getTempEpubPath(),
                 null,
                 array('override' => true)
             );
@@ -234,7 +234,7 @@ class Epub
         // now we need to try finding the requested files for modifications
         $this->finder = new Finder();
         $this->finder->files()->name($this->files_to_replace)->in(
-            $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' . $this->epub_personal
+            $this->getTempEpubPath()
         );
 
         // log into debug stream
@@ -274,14 +274,11 @@ class Epub
         // lets start the process that handles the zipping
         $process = Process::fromShellCommandline(
             'cd '.
-            $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' .
-            $this->epub_personal .
+            $this->getTempEpubPath() .
             ' && zip -0Xq ' .
-            $this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' .
-            $this->epub_personal .
+            $this->getPublicEpubPath() .
             ' mimetype && zip -Xr9Dq ' .
-            $this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' .
-            $this->epub_personal . ' *'
+            $this->getPublicEpubPath() . ' *'
         );
 
         $process->run();
@@ -293,5 +290,20 @@ class Epub
         ) {
             $this->deny('Zipping went wrong. Could not create personalised ePub: ' . $process->getErrorOutput());
         }
+    }
+
+    private function getOriginalEpubPath()
+    {
+        return $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub;
+    }
+
+    private function getPublicEpubPath()
+    {
+        return $this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' . $this->epub_personal;
+    }
+
+    private function getTempEpubPath()
+    {
+        return $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' . $this->epub_personal;
     }
 }
