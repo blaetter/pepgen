@@ -93,7 +93,7 @@ class ClearCommand extends Command
             $output->writeln(
                 'No valid argument provided or target dir not existing'
             );
-            return false;
+            return 1;
         }
 
         // apply file identifier to finder
@@ -117,7 +117,7 @@ class ClearCommand extends Command
             foreach ($this->finder as $file) {
                 $output->writeln($file);
             }
-            return false;
+            return 1;
         }
 
         // delete the files, if no dry-run is specified.
@@ -129,6 +129,7 @@ class ClearCommand extends Command
                 OutputInterface::VERBOSITY_VERBOSE
             );
         }
+        return 0;
     }
 
     protected function getTargetDir($target)

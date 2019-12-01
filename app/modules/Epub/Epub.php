@@ -203,11 +203,9 @@ class Epub
     {
         // check for needed files
         // if its not there the requests is per se not allowed
-        if (
-            !$this->filesystem->exists(
-                $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
-            )
-        ) {
+        if (!$this->filesystem->exists(
+            $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
+        )) {
             $this->deny(
                 'Requested ePub does not exist: ' .
                 $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub
@@ -274,7 +272,7 @@ class Epub
     public function process()
     {
         // lets start the process that handles the zipping
-        $process = new Process(
+        $process = Process::fromShellCommandline(
             'cd '.
             $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' .
             $this->epub_personal .
@@ -288,8 +286,7 @@ class Epub
 
         $process->run();
 
-        if (
-            !$process->isSuccessful() ||
+        if (!$process->isSuccessful() ||
             !$this->filesystem->exists(
                 $this->config->get('base_path') . $this->config->get('epub_public_dir') . '/' . $this->epub_personal
             )
