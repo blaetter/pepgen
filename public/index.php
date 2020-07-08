@@ -20,7 +20,7 @@ if (isset($request['watermark'])) {
     $watermark = urldecode(htmlspecialchars($request['watermark']));
 }
 
-$epub = new \Pepgen\epub\Epub($epub_id, $token, $watermark);
+$epub = new \Pepgen\Epub\Epub($epub_id, $token, $watermark);
 try {
     $epub->run();
 } catch (ErrorException $e) {
