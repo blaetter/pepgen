@@ -10,3 +10,4 @@ epub_temp_dir: /tmp
 epub_public_dir: /public/download
 # loglevel - @see RFC 5424
 loglevel: 100
+keepfiles: 5

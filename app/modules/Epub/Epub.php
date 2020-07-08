@@ -96,6 +96,7 @@ class Epub
         $this->logger->pushHandler(
             new RotatingFileHandler(
                 __DIR__.'/../../../logs/application.log',
+                $this->config->get('keepfiles'),
                 $this->config->get('loglevel')
             )
         );

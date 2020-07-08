@@ -39,6 +39,7 @@ You need to configure the following parameters that are located in the `app/conf
 8. `epub_temp_dir` the temp directory for creating the epubs, e.g. `/tmp`
 9. `epub_public_dir` the directory where the personal epubs will be moved to, e.g. `/public/download`
 10. `loglevel` a RFC 5424 numeric loglevel.
+11. `keepfiles` number of logfiles that needs to be kept after rotation.
 
 ## Usage
 
