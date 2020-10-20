@@ -42,6 +42,7 @@ plugins:
     config:
       file_extensions:
         - php
+      rulesets: "phpmd.rules.xml"
   fixme:
     enabled: true
   duplication:
