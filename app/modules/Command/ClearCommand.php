@@ -14,10 +14,54 @@ use Pepgen\Helper\Config;
 
 class ClearCommand extends Command
 {
-    public $config;
-    private $filesystem;
-    private $finder;
+    /**
+     * The file suffix or extension to look for in the file system
+     *
+     * @var string
+     */
     private $file_identifier;
+
+    /**
+     * The representation of the symfony file system object
+     *
+     * @var Symfony\Component\Filesystem\Filesystem
+     */
+    private $filesystem;
+
+    /**
+     * The representation of the symfony finder object
+     *
+     * @var Symfony\Component\Finder\Finder
+     */
+    private $finder;
+
+    /**
+     * The input interface object
+     *
+     * @var Symfony\Component\Console\Input\InputInterface
+     */
+    private $input;
+
+    /**
+     * The output interface object
+     *
+     * @var Symfony\Component\Console\Output\OutInterface
+     */
+    private $output;
+
+    /**
+     * The target dir to look for
+     *
+     * @var string
+     */
+    private $target_dir;
+
+    /**
+     * The config object
+     *
+     * @var Pepgen\Helper\Config
+     */
+    public $config;
 
     public function __construct()
     {
@@ -82,67 +126,90 @@ class ClearCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // set default file identifier to epub file extension.
-        $this->file_identifier = '*.epub';
-
         // get the target dir based on given target
-        $target_dir = $this->getTargetDir($input->getArgument('target'));
+        $this->setTargetDir($input->getArgument('target'));
+        // set input class member
+        $this->input = $input;
+        // set output class member
+        $this->output = $output;
 
         // check if target dir is set properly, return otherwise
-        if (null === $target_dir || !$this->filesystem->exists($target_dir)) {
-            $output->writeln(
-                'No valid argument provided or target dir not existing'
-            );
+        if (true !== $this->isRequestValid()) {
             return 1;
         }
 
         // apply file identifier to finder
         $this->finder->files()->name($this->file_identifier);
-        // check if we need to limit the files beeing selected, this should either be with the --all flag or via --days
-        if ($input->getOption('days') && 0 < $input->getOption('days')) {
-            // in this case we need to set the number of days where files will be kept accoring to the given number
-            $this->finder->date('< ' . $input->getOption('days') . ' days ago');
-        } elseif (false === $input->getOption('all')) {
-            // in this case we use a standard of 7 days as long as --all is not set.
-            $this->finder->date('< 7 days ago');
-        }
+
+        // set the finder date parameter if needed
+        $this->setFinderDate();
 
         // set the finder to the actually wanted files
-        $this->finder->in($target_dir);
+        $this->finder->in($this->target_dir);
 
         // check for dry-run
         if ($input->getOption('dry-run')) {
-            // in dry-run, only display the files
-            $output->writeln('dry-run, printing files that matches given criteria');
-            foreach ($this->finder as $file) {
-                $output->writeln($file);
-            }
-            return 1;
+            return $this->executeDryRun();
         }
 
         // delete the files, if no dry-run is specified.
         try {
             $this->filesystem->remove($this->finder);
-        } catch (IOException $e) {
-            $output->writeln(
-                'Something went wrong: ' . $e->getMessage(),
+        } catch (IOException $exception) {
+            $this->output->writeln(
+                'Something went wrong: ' . $exception->getMessage(),
                 OutputInterface::VERBOSITY_VERBOSE
             );
         }
         return 0;
     }
 
-    protected function getTargetDir($target)
+    protected function setTargetDir($target)
     {
+        // set default file identifier to epub file extension.
+        $this->file_identifier = '*.epub';
+        $this->target_dir = '';
         // set the directory depending on the given target
         if ('temp' == $target) {
-            return $this->config->get('base_path') . $this->config->get('epub_temp_dir');
+            $this->target_dir = $this->config->get('base_path') . $this->config->get('epub_temp_dir');
         } elseif ('public' == $target) {
-            return $this->config->get('base_path') . $this->config->get('epub_public_dir');
+            $this->target_dir = $this->config->get('base_path') . $this->config->get('epub_public_dir');
         } elseif ('logs' == $target) {
             $this->file_identifier = '*.log';
-            return $this->config->get('base_path') . $this->config->get('epub_log_dir');
+            $this->target_dir = $this->config->get('base_path') . $this->config->get('epub_log_dir');
         }
-        return null;
+    }
+
+    private function executeDryRun()
+    {
+        // in dry-run, only display the files
+        $this->output->writeln('dry-run, printing files that matches given criteria');
+        foreach ($this->finder as $file) {
+            $this->output->writeln($file);
+        }
+        return 1;
+    }
+
+    private function setFinderDate()
+    {
+        // check if we need to limit the files beeing selected, this should either be with the --all flag or via --days
+        if ($this->input->getOption('days') && 0 < $this->input->getOption('days')) {
+            // in this case we need to set the number of days where files will be kept accoring to the given number
+            $this->finder->date('< ' . $this->input->getOption('days') . ' days ago');
+        } elseif (false === $this->input->getOption('all')) {
+            // in this case we use a standard of 7 days as long as --all is not set.
+            $this->finder->date('< 7 days ago');
+        }
+    }
+
+    private function isRequestValid()
+    {
+        if (null === $this->target_dir || !$this->filesystem->exists($this->target_dir)) {
+            $this->output->writeln(
+                'No valid argument provided or target dir not existing'
+            );
+            return false;
+        }
+        return true;
     }
 }
