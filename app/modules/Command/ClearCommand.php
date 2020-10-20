@@ -18,13 +18,6 @@ class ClearCommand extends Command
     private $filesystem;
     private $finder;
     private $file_identifier;
-    private $help_text = "This command clears either the temp, public epub or log folder." . PHP_EOL .
-        "Per default it does not delete files that are less than 7 days old, but you might force deleting " .
-        "all files with --all or specify a number of days that needs to be kept with --days = 5." . PHP_EOL .
-        "This is mainly because we want to keep public ebooks for a litte bit to give users the chance " .
-        "to download it." . PHP_EOL .
-        "The temp folder should be empty as the temp files are deleted after successfully creating" .
-        "a personalized epub.";
 
     public function __construct()
     {
@@ -46,7 +39,13 @@ class ClearCommand extends Command
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp(
-                $this->help_text
+                "This command clears either the temp, public epub or log folder." . PHP_EOL .
+                "Per default it does not delete files that are less than 7 days old, but you might force deleting " .
+                "all files with --all or specify a number of days that needs to be kept with --days = 5." . PHP_EOL .
+                "This is mainly because we want to keep public ebooks for a litte bit to give users the chance " .
+                "to download it." . PHP_EOL .
+                "The temp folder should be empty as the temp files are deleted after successfully creating" .
+                "a personalized epub."
             )
 
             ->addArgument(
