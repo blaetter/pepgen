@@ -259,7 +259,7 @@ class Epub
             if (null !== $modified_content && $original_content !== $modified_content) {
                 try {
                     $this->filesystem->dumpFile($file->getRealpath(), $modified_content);
-                } catch (IOException $e) {
+                } catch (IOException $exception) {
                     $this->deny('Could not write watermark to file.');
                 }
             }
