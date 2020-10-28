@@ -126,12 +126,12 @@ class ClearCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // get the target dir based on given target
-        $this->setTargetDir($input->getArgument('target'));
         // set input class member
         $this->input = $input;
         // set output class member
         $this->output = $output;
+        // get the target dir based on given target
+        $this->setTargetDir($this->input->getArgument('target'));
 
         // check if target dir is set properly, return otherwise
         if (true !== $this->isRequestValid()) {
