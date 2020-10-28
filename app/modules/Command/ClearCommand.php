@@ -139,7 +139,7 @@ class ClearCommand extends Command
         }
 
         // apply file identifier to finder
-        $this->finder->files()->name($this->file_identifier);
+        $this->finder->name($this->file_identifier);
 
         // set the finder date parameter if needed
         $this->setFinderDate();
