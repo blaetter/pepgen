@@ -1,6 +1,6 @@
 <?php
 
-namespace Pepgen\Tests\Epub;
+namespace Pepgen\Tests\Command;
 
 use Pepgen\Tests\BaseTest;
 use Pepgen\Command\ClearCommand;

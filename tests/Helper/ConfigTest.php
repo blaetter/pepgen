@@ -1,6 +1,6 @@
 <?php
 
-namespace Pepgen\Tests\helper;
+namespace Pepgen\Tests\Helper;
 
 use Pepgen\Tests\BaseTest;
 use Pepgen\Helper\Config;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Pepgen\Tests\helper;
+namespace Pepgen\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
 
-class TokenizeTest extends TestCase
+class TokenizerTest extends TestCase
 {
 
     public function testTokenize()

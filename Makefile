@@ -27,4 +27,4 @@ fix: # automated repair of code smells
 
 test: #runs all tests
 	vendor/bin/phpcs --config-set ignore_warnings_on_exit 1 --standard=psr2 app/
-	php -dzend_extension=xdebug.so vendor/bin/phpunit -c phpunit.xml.dist
+	php -dzend_extension=xdebug.so vendor/bin/phpunit tests
