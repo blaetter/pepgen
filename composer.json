@@ -1,35 +1,33 @@
 {
-  "name": "blaetter/pepgen",
-  "type": "project",
-  "version": "2.0.0-dev",
-  "description": "Personalized ePub Generation",
-  "authors": [
-      {
+    "name": "blaetter/pepgen",
+    "type": "project",
+    "version": "2.0.0-dev",
+    "description": "Personalized ePub Generation",
+    "authors": [{
         "name": "Andreas Mängel"
-      }
-  ],
-  "prefer-stable": true,
-  "minimum-stability": "beta",
-  "require": {
-      "monolog/monolog": "^1.0",
-      "php": ">7.2",
-      "symfony/finder": "@stable",
-      "symfony/debug": "@stable",
-      "symfony/filesystem": "@stable",
-      "symfony/process": "@stable",
-      "symfony/console": "@stable",
-      "symfony/yaml": "@stable"
-  },
-  "require-dev": {
-      "phpunit/phpunit": "@stable",
-      "phpmd/phpmd": "@stable",
-      "squizlabs/php_codesniffer": "@stable",
-      "php-coveralls/php-coveralls": "@stable"
-  },
-  "autoload": {
-      "psr-4": { "Pepgen\\": "app/modules" }
-  },
-  "autoload-dev": {
-      "psr-4": { "Pepgen\\Tests\\" : "tests" }
-  }
+    }],
+    "prefer-stable": true,
+    "minimum-stability": "beta",
+    "require": {
+        "monolog/monolog": "^1.0",
+        "php": ">7.3",
+        "symfony/finder": "@stable",
+        "symfony/debug": "@stable",
+        "symfony/filesystem": "@stable",
+        "symfony/process": "@stable",
+        "symfony/console": "@stable",
+        "symfony/yaml": "@stable"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "@stable",
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "@stable",
+        "php-coveralls/php-coveralls": "@stable"
+    },
+    "autoload": {
+        "psr-4": { "Pepgen\\": "app/modules" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Pepgen\\Tests\\": "tests" }
+    }
 }

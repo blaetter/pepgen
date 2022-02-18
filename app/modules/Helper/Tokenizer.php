@@ -19,11 +19,13 @@ class Tokenizer
      */
     public static function tokenize($epub_id, $secret, $watermark)
     {
+        $date = \DateTimeImmutable::createFromFormat('U', time());
+
         return md5(
             $epub_id.
             $secret.
             $watermark.
-            strftime("%d.%m.%Y")
+            $date->format('d.m.Y')
         );
     }
 }

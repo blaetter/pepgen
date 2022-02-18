@@ -9,6 +9,8 @@ class TokenizerTest extends TestCase
 
     public function testTokenize()
     {
+        $date = \DateTimeImmutable::createFromFormat('U', time());
+
         $id = 'id';
         $secret = 'secret';
         $watermark = 'watermark';
@@ -17,7 +19,7 @@ class TokenizerTest extends TestCase
             $id.
             $secret.
             $watermark.
-            strftime("%d.%m.%Y")
+            $date->format('d.m.Y')
         ));
     }
 }
