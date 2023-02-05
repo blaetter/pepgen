@@ -10,7 +10,7 @@ This application generates personalized ePubs. As ePubs are just compressed fold
 
 ## Requirements
 
-* php > 5.3 for Symfony Components
+* php >= 8.0 for Symfony Components
 * Unix environment with an AMP stack (should work on windows to, but thats not tested nor supported)
 * Shell to run composer
 
