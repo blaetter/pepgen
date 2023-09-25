@@ -32,7 +32,11 @@ class Epub
 
     private $token;
 
+    private $token_check;
+
     private $epub;
+
+    private $epub_personal;
 
     private $textpattern;
 
@@ -79,10 +83,15 @@ class Epub
         // the name of the personal epub - the name should be the ordinary epub name plus the token
         $this->epub_personal = $this->token . '.' . $this->epub;
 
+        // prepare the token check to make sure request is coming from a trusted site
+        $this->token_check = Tokenizer::tokenize($this->epub_id, $this->config->get('secret'), $this->watermark);
+
         // create a debugging information array
         $this->debugging_info = [
             'epub_id' => $this->epub_id,
             'token' => $this->token,
+            'token_check' => $this->token_check,
+            'watermark' => $this->watermark,
             'files' => $this->files_to_replace,
             'pattern' => $this->textpattern
         ];
@@ -189,7 +198,7 @@ class Epub
         if (empty($this->watermark) ||
             empty($this->epub_id) ||
             empty($this->token) ||
-            $this->token !== Tokenizer::tokenize($this->epub_id, $this->config->get('secret'), $this->watermark)
+            $this->token !== $this->token_check
         ) {
             $this->deny('Not enough arguments or wrong arguments.');
         }
