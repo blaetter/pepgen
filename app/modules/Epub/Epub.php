@@ -74,8 +74,9 @@ class Epub
         // the token given by the request
         $this->token = $token;
 
-        // the watermark that will be printed right into the epub
-        $this->watermark = $watermark;
+        // the watermark that will be printed right into the epub, as there might be special characters, we need
+        // to urldecode them.
+        $this->watermark = urldecode($watermark);
 
         // the name of the epub - the name should be the node-id with an .epub suffix
         $this->epub = $this->epub_id . '.epub';
