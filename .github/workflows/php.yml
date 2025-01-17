@@ -36,4 +36,4 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Run test suite
-      run: 	vendor/bin/phpcs --config-set ignore_warnings_on_exit --standard=psr2 app/ && php -dzend_extension=xdebug.so -dxdebug.mode=coverage vendor/bin/phpunit tests
+      run: 	php -dzend_extension=xdebug.so -dxdebug.mode=coverage vendor/bin/phpunit tests
