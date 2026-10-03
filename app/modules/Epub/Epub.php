@@ -190,8 +190,12 @@ class Epub
      */
     public function deny($msg = '', $details = '')
     {
-        // log bad request
-        $this->logger->info('Denied: ' . $msg . ('' !== $details ? ' ' . $details : ''), $this->debugging_info);
+        // log bad request, the details follow the message after a colon, e.g. "Could not copy ePub: <reason>"
+        $details = trim((string) $details);
+        $this->logger->info(
+            'Denied: ' . ('' !== $details ? rtrim($msg, '.') . ': ' . $details : $msg),
+            $this->debugging_info
+        );
         // send error message to end user
         $this->message = 'Something went wrong: ' . $msg;
         // because of previous errors, we need to end the run() here

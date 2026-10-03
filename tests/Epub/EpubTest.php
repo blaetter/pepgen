@@ -184,6 +184,11 @@ class EpubTest extends BaseTest
             $this->assertSame('Something went wrong: Requested ePub does not exist.', $epub->message);
             $this->assertStringNotContainsString('/', $exception->getMessage());
         }
+        // the details are only logged, separated by a colon
+        $this->assertStringContainsString(
+            'Denied: Requested ePub does not exist: ' . $this->path('epub/missing.epub'),
+            file_get_contents($this->path('logs/application-' . date('Y-m-d') . '.log'))
+        );
     }
 
     /**
