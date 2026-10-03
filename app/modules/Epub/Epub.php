@@ -14,12 +14,31 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Pepgen\Helper\Config;
 use Pepgen\Helper\Tokenizer;
 
 class Epub
 {
+    /**
+     * The allowed characters of an epub id. As the id is part of file paths, it must not contain dots or slashes.
+     */
+    public const EPUB_ID_PATTERN = '/^[A-Za-z0-9_-]+$/';
+
+    /**
+     * The log level, if none is configured (INFO, @see RFC 5424).
+     */
+    public const DEFAULT_LOGLEVEL = 200;
+
+    /**
+     * The number of log files kept, if none is configured.
+     */
+    public const DEFAULT_KEEPFILES = 5;
+
+    /**
+     * The maximum number of seconds a zip command may run.
+     */
+    public const ZIP_TIMEOUT = 120;
+
     public $success;
 
     public $message;
@@ -84,14 +103,19 @@ class Epub
         $this->epub_personal = $this->token . '.' . $this->epub;
 
         // prepare the token check to make sure request is coming from a trusted site
-        $this->token_check = Tokenizer::tokenize($this->epub_id, $this->config->get('secret'), $this->watermark);
+        $this->token_check = Tokenizer::tokenize(
+            $this->epub_id,
+            $this->config->get('secret'),
+            $this->watermark,
+            $this->config->get('timezone')
+        );
 
         // create a debugging information array
+        // The watermark contains personal data of the customer and the valid token must not be logged, so both are
+        // left out. The requested token is enough to find the generated file.
         $this->debugging_info = [
             'epub_id' => $this->epub_id,
             'token' => $this->token,
-            'token_check' => $this->token_check,
-            'watermark' => $this->watermark,
             'files' => $this->files_to_replace,
             'pattern' => $this->textpattern
         ];
@@ -104,9 +128,9 @@ class Epub
         // Now add some handlers
         $this->logger->pushHandler(
             new RotatingFileHandler(
-                __DIR__.'/../../../logs/application.log',
-                $this->config->get('keepfiles'),
-                $this->config->get('loglevel')
+                $this->getLogPath(),
+                (int) ($this->config->get('keepfiles') ?: self::DEFAULT_KEEPFILES),
+                (int) ($this->config->get('loglevel') ?: self::DEFAULT_LOGLEVEL)
             )
         );
     }
@@ -121,7 +145,9 @@ class Epub
         $this->verify();
 
         // check if epub is already generated and deliver it the short way
-        $this->fastrun();
+        if ($this->fastrun()) {
+            return;
+        }
 
         // look for and copy the epub blueprint
         $this->copy();
@@ -131,6 +157,9 @@ class Epub
 
         // process the epub - the real generation
         $this->process();
+
+        // the temporary copy is not needed anymore
+        $this->cleanup();
 
         // everything is fine
         $this->success();
@@ -157,11 +186,12 @@ class Epub
      * This means there's noting to do, so deny the request
      *
      * @param $msg - the messages that is displayed
+     * @param $details - further details, e.g. paths or exception messages, that are only logged
      */
-    public function deny($msg = '')
+    public function deny($msg = '', $details = '')
     {
         // log bad request
-        $this->logger->info('Denied: ' . $msg, $this->debugging_info);
+        $this->logger->info('Denied: ' . $msg . ('' !== $details ? ' ' . $details : ''), $this->debugging_info);
         // send error message to end user
         $this->message = 'Something went wrong: ' . $msg;
         // because of previous errors, we need to end the run() here
@@ -171,6 +201,7 @@ class Epub
     /**
      * This function provides the download of the given file via a crypted url - if already there
      *
+     * @return bool true, if the epub was already generated, so there is nothing left to do
      */
     public function fastrun()
     {
@@ -180,8 +211,9 @@ class Epub
                 'Fastrun: Found previously generated file.',
                 $this->debugging_info
             );
-            $this->success();
+            return $this->success();
         }
+        return false;
     }
 
     /**
@@ -198,7 +230,11 @@ class Epub
         if (empty($this->watermark) ||
             empty($this->epub_id) ||
             empty($this->token) ||
-            $this->token !== $this->token_check
+            // the id is part of file paths and the zip command, so only allow safe characters
+            !preg_match(self::EPUB_ID_PATTERN, (string) $this->epub_id) ||
+            !is_string($this->token) ||
+            // compare in constant time, so the response time does not reveal parts of the valid token
+            !hash_equals($this->token_check, $this->token)
         ) {
             $this->deny('Not enough arguments or wrong arguments.');
         }
@@ -217,7 +253,7 @@ class Epub
             $this->getOriginalEpubPath()
         )) {
             $this->deny(
-                'Requested ePub does not exist: ' .
+                'Requested ePub does not exist.',
                 $this->getOriginalEpubPath()
             );
         }
@@ -231,7 +267,7 @@ class Epub
                 array('override' => true)
             );
         } catch (IOException $e) {
-            $this->deny('Could not copy ePub: '.$e);
+            $this->deny('Could not copy ePub.', $e->getMessage());
         }
     }
 
@@ -258,9 +294,11 @@ class Epub
             $original_content = $file->getContents();
 
             // replace the given textpattern with the personal user watermark
-            $modified_content = preg_replace(
+            // A callback is used, so "$1" or "\\1" within the watermark are not handled as back references.
+            $watermark = sprintf($this->template, $this->watermark);
+            $modified_content = preg_replace_callback(
                 $this->textpattern,
-                sprintf($this->template, $this->watermark),
+                fn () => $watermark,
                 $original_content
             );
 
@@ -269,7 +307,7 @@ class Epub
                 try {
                     $this->filesystem->dumpFile($file->getRealpath(), $modified_content);
                 } catch (IOException $exception) {
-                    $this->deny('Could not write watermark to file.');
+                    $this->deny('Could not write watermark to file.', $exception->getMessage());
                 }
             }
         }
@@ -281,25 +319,85 @@ class Epub
      */
     public function process()
     {
-        // lets start the process that handles the zipping
-        $process = Process::fromShellCommandline(
-            'cd '.
-            $this->getTempEpubPath() .
-            ' && zip -0Xq ' .
-            $this->getPublicEpubPath() .
-            ' mimetype && zip -Xr9Dq ' .
-            $this->getPublicEpubPath() . ' *'
-        );
-
-        $process->run();
-
-        if (!$process->isSuccessful() ||
-            !$this->filesystem->exists(
-                $this->config->get('base_path') . $this->config->get('epub_public_dir') . '/' . $this->epub_personal
-            )
-        ) {
-            $this->deny('Zipping went wrong. Could not create personalised ePub: ' . $process->getErrorOutput());
+        $temp_path = $this->getTempEpubPath();
+        if (!is_dir($temp_path)) {
+            $this->deny('Zipping went wrong. Could not create personalised ePub.', 'Missing ' . $temp_path);
         }
+
+        // The mimetype has to be the first file and uncompressed, afterwards all other (not hidden) files are added.
+        // The commands are run without a shell, so no part of the paths is interpreted by a shell.
+        // zip writes into a temporary file before renaming it to the epub. With -b this temporary file is created
+        // within the temp directory of the request instead of the public directory, so an interrupted zip does not
+        // leave any file in the public directory.
+        $files = array_values(array_filter(
+            scandir($temp_path),
+            fn ($file) => '.' !== $file[0]
+        ));
+        $commands = [
+            ['zip', '-0Xq', '-b', $temp_path, $this->getPublicEpubPath(), 'mimetype'],
+            array_merge(['zip', '-Xr9Dq', '-b', $temp_path, $this->getPublicEpubPath()], $files),
+        ];
+
+        foreach ($commands as $command) {
+            $error = null;
+            try {
+                $process = $this->createProcess($command, $temp_path);
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    $error = $process->getErrorOutput();
+                }
+            } catch (\RuntimeException $exception) {
+                // e.g. the timeout was exceeded
+                $error = $exception->getMessage();
+            }
+
+            if (null !== $error) {
+                // Remove the incomplete epub, otherwise it would be delivered by the next fastrun.
+                $this->filesystem->remove($this->getPublicEpubPath());
+                $this->cleanup();
+                $this->deny('Zipping went wrong. Could not create personalised ePub.', $error);
+            }
+        }
+
+        if (!$this->filesystem->exists($this->getPublicEpubPath())) {
+            $this->deny('Zipping went wrong. Could not create personalised ePub.', 'Missing ' . $this->getPublicEpubPath());
+        }
+    }
+
+    /**
+     * Creates the process for the given zip command.
+     *
+     * @param array $command The command and its arguments
+     * @param string $working_directory The working directory of the command
+     * @return Process
+     */
+    protected function createProcess(array $command, $working_directory)
+    {
+        return new Process($command, $working_directory, null, null, self::ZIP_TIMEOUT);
+    }
+
+    /**
+     * Removes the temporary copy of the epub after the personalised epub was created.
+     *
+     * A failure is only logged, as the personalised epub is ready. Remaining copies are removed by
+     * "bin/console clear temp".
+     */
+    public function cleanup()
+    {
+        try {
+            $this->filesystem->remove($this->getTempEpubPath());
+        } catch (IOException $exception) {
+            $this->logger->warning(
+                'Cleanup: Could not remove temporary copy. ' . $exception->getMessage(),
+                $this->debugging_info
+            );
+        }
+    }
+
+    private function getLogPath()
+    {
+        $base_path = $this->config->get('base_path') ?: __DIR__ . '/../../..';
+        return $base_path . ($this->config->get('epub_log_dir') ?: '/logs') . '/application.log';
     }
 
     private function getOriginalEpubPath()

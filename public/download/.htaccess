@@ -1,0 +1,3 @@
+# The personalised ePubs are only fetched by the website or shop with their (secret) file name.
+# Never list the files of this directory.
+Options -Indexes

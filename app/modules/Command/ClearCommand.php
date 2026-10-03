@@ -15,6 +15,17 @@ use Pepgen\Helper\Config;
 class ClearCommand extends Command
 {
     /**
+     * The temporary files of zip, e.g. "zi0lqLBV". Older versions of pepgen created them within the public directory,
+     * an interrupted zip left them there.
+     */
+    public const ZIP_LEFTOVER_PATTERN = '/^zi[A-Za-z0-9]{6}$/';
+
+    /**
+     * Temporary files of zip are only removed, if they are older than this, so a running zip is not disturbed.
+     */
+    public const ZIP_LEFTOVER_MIN_AGE = '1 day ago';
+
+    /**
      * The file suffix or extension to look for in the file system
      *
      * @var string
@@ -88,8 +99,10 @@ class ClearCommand extends Command
                 "all files with --all or specify a number of days that needs to be kept with --days = 5." . PHP_EOL .
                 "This is mainly because we want to keep public ebooks for a litte bit to give users the chance " .
                 "to download it." . PHP_EOL .
-                "The temp folder should be empty as the temp files are deleted after successfully creating" .
-                "a personalized epub."
+                "The temp folder should be empty as the temp files are deleted after successfully creating " .
+                "a personalized epub." . PHP_EOL .
+                "Clearing the public folder also removes temporary files of an interrupted zip (zi*) that are " .
+                "older than one day."
             )
 
             ->addArgument(
@@ -124,7 +137,7 @@ class ClearCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // set input class member
         $this->input = $input;
@@ -133,9 +146,9 @@ class ClearCommand extends Command
         // get the target dir based on given target
         $this->setTargetDir($this->input->getArgument('target'));
 
-        // check if target dir is set properly, return otherwise
+        // check if target dir and options are set properly, return otherwise
         if (true !== $this->isRequestValid()) {
-            return 1;
+            return Command::FAILURE;
         }
 
         // apply file identifier to finder
@@ -147,21 +160,29 @@ class ClearCommand extends Command
         // set the finder to the actually wanted files
         $this->finder->in($this->target_dir);
 
+        $finders = [$this->finder];
+        if ('public' == $this->input->getArgument('target')) {
+            $finders[] = $this->getZipLeftoverFinder();
+        }
+
         // check for dry-run
         if ($input->getOption('dry-run')) {
-            return $this->executeDryRun();
+            return $this->executeDryRun($finders);
         }
 
         // delete the files, if no dry-run is specified.
         try {
-            $this->filesystem->remove($this->finder);
+            foreach ($finders as $finder) {
+                $this->filesystem->remove($finder);
+            }
         } catch (IOException $exception) {
             $this->output->writeln(
                 'Something went wrong: ' . $exception->getMessage(),
                 OutputInterface::VERBOSITY_VERBOSE
             );
+            return Command::FAILURE;
         }
-        return 0;
+        return Command::SUCCESS;
     }
 
     protected function setTargetDir($target)
@@ -180,23 +201,47 @@ class ClearCommand extends Command
         }
     }
 
-    private function executeDryRun()
+    private function executeDryRun(array $finders)
     {
         // in dry-run, only display the files
         $this->output->writeln('dry-run, printing files that matches given criteria');
-        foreach ($this->finder as $file) {
-            $this->output->writeln($file);
+        foreach ($finders as $finder) {
+            foreach ($finder as $file) {
+                $this->output->writeln($file);
+            }
         }
-        return 1;
+        // a dry run is successful, so it can be used in scripts, e.g. via cron
+        return Command::SUCCESS;
+    }
+
+    /**
+     * Returns a finder for the temporary files left by an interrupted zip within the public directory.
+     *
+     * They are removed independent of --all or --days, but only if they are older than a day.
+     *
+     * @return Finder
+     */
+    private function getZipLeftoverFinder()
+    {
+        return (new Finder())
+            ->files()
+            ->depth('== 0')
+            ->name(self::ZIP_LEFTOVER_PATTERN)
+            ->date('< ' . self::ZIP_LEFTOVER_MIN_AGE)
+            ->in($this->target_dir);
     }
 
     private function setFinderDate()
     {
         // check if we need to limit the files beeing selected, this should either be with the --all flag or via --days
-        if ($this->input->getOption('days') && 0 < $this->input->getOption('days')) {
+        if ($this->input->getOption('all')) {
+            // all files are deleted, --days is ignored as described in the help
+            return;
+        }
+        if (null !== $this->input->getOption('days')) {
             // in this case we need to set the number of days where files will be kept accoring to the given number
-            $this->finder->date('< ' . $this->input->getOption('days') . ' days ago');
-        } elseif (false === $this->input->getOption('all')) {
+            $this->finder->date('< ' . (int) $this->input->getOption('days') . ' days ago');
+        } else {
             // in this case we use a standard of 7 days as long as --all is not set.
             $this->finder->date('< 7 days ago');
         }
@@ -207,6 +252,13 @@ class ClearCommand extends Command
         if (null === $this->target_dir || !$this->filesystem->exists($this->target_dir)) {
             $this->output->writeln(
                 'No valid argument provided or target dir not existing'
+            );
+            return false;
+        }
+        $days = $this->input->getOption('days');
+        if (null !== $days && (!ctype_digit((string) $days) || 0 === (int) $days)) {
+            $this->output->writeln(
+                'The option --days has to be a number greater than 0.'
             );
             return false;
         }

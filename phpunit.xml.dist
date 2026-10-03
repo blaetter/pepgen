@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" processIsolation="false" stopOnFailure="false" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" processIsolation="false" stopOnFailure="false" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
   <coverage>
-    <include>
-      <directory>app/modules</directory>
-    </include>
     <report>
       <clover outputFile="build/logs/clover.xml"/>
       <html outputDirectory="build/report" lowUpperBound="35" highLowerBound="70"/>
@@ -12,8 +9,14 @@
   </coverage>
   <testsuites>
     <testsuite name="PePGen Test Suite">
-      <file>tests/Command/ClearCommandTest.php</file>
+      <directory>tests</directory>
+      <exclude>tests/BaseTest.php</exclude>
     </testsuite>
   </testsuites>
+  <source>
+    <include>
+      <directory>app/modules</directory>
+    </include>
+  </source>
   <logging/>
 </phpunit>
