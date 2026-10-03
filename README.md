@@ -1,7 +1,7 @@
 # PeP-Gen Personalized ePub Generation
 
 [![Coverage Status](https://coveralls.io/repos/github/blaetter/pepgen/badge.svg)](https://coveralls.io/github/blaetter/pepgen)
-[![Build Status](https://travis-ci.org/blaetter/pepgen.svg)](https://travis-ci.org/blaetter/pepgen)
+[![Build Status](https://github.com/blaetter/pepgen/actions/workflows/php.yml/badge.svg)](https://github.com/blaetter/pepgen/actions/workflows/php.yml)
 [![Code Climate](https://codeclimate.com/github/blaetter/pepgen/badges/gpa.svg)](https://codeclimate.com/github/blaetter/pepgen)
 
 ## Introduction
@@ -10,7 +10,7 @@ This application generates personalized ePubs. As ePubs are just compressed fold
 
 ## Requirements
 
-* php >= 8.0 for Symfony Components
+* php >= 8.2 (tested with 8.2 to 8.4)
 * Unix environment with an AMP stack (should work on windows to, but thats not tested nor supported)
 * Shell to run composer
 
@@ -24,6 +24,7 @@ This application generates personalized ePubs. As ePubs are just compressed fold
 6. set up your configuration
 7. put at least one unzipped ePub into the `epub` folder
 8. make sure your webserver only has access to public/ and go for it
+9. make sure the webserver does not list the files of `public/download` (Apache: the shipped `.htaccess`, nginx: `autoindex off`). If possible, allow access to `public/` only for the server of your website or shop.
 
 ## Configuration
 
@@ -32,18 +33,19 @@ You need to configure the following parameters that are located in the `app/conf
 1. `base_path` - The absolute base path to your copy of PeP-Gen. No trailing slash.
 2. `http_base` - The baseic URL of your PeP-Gen. No trailing slash.
 3. `secret` - The secret token that is shared between your website or shop and PeP-Gen
-4. `textpattern` - The textpattern that is located in your original ePubs e.g. `<!-- WATERMARK -->` or `XXX_WATERMARK_XXX`. Should be very unique. Has to contain delemiters because I don't know what characters you want to use.
-5. `template` - The template the textpattern is replaced by. It should contain a `%s` pattern so the watermark can be put into it
-6. `files_to_replace` a string of files where the watermark can be found in. Maybe you want to put the watermark in more than one file? Should either be a full filename or a regular expression including the delemiters.
-7. `epub_original_dir` the source directory where you have to place the untouched epubs, e.g. `/epub`
-8. `epub_temp_dir` the temp directory for creating the epubs, e.g. `/tmp`
-9. `epub_public_dir` the directory where the personal epubs will be moved to, e.g. `/public/download`
-10. `loglevel` a RFC 5424 numeric loglevel.
-11. `keepfiles` number of logfiles that needs to be kept after rotation.
+4. `timezone` - The timezone of your website or shop, e.g. `Europe/Berlin`. The token contains the current day, so both sides have to determine it in the same timezone. Defaults to `Europe/Berlin`.
+5. `textpattern` - The textpattern that is located in your original ePubs e.g. `<!-- WATERMARK -->` or `XXX_WATERMARK_XXX`. Should be very unique. Has to contain delemiters because I don't know what characters you want to use.
+6. `template` - The template the textpattern is replaced by. It should contain a `%s` pattern so the watermark can be put into it
+7. `files_to_replace` a string of files where the watermark can be found in. Maybe you want to put the watermark in more than one file? Should either be a full filename or a regular expression including the delemiters.
+8. `epub_original_dir` the source directory where you have to place the untouched epubs, e.g. `/epub`
+9. `epub_temp_dir` the temp directory for creating the epubs, e.g. `/tmp`
+10. `epub_public_dir` the directory where the personal epubs will be moved to, e.g. `/public/download`
+11. `loglevel` a RFC 5424 numeric loglevel. Defaults to `200` (INFO), `100` (DEBUG) is meant for development only.
+12. `keepfiles` number of logfiles that needs to be kept after rotation.
 
 ## Usage
 
-After setting up the application you can call it via a browser. The application needs the following parameters:
+After setting up the application your website or shop sends a `POST` request to it (other methods are answered with `405 Method Not Allowed`, so tokens and watermarks do not end up in URLs and access logs). The application needs the following parameters:
 
 1. `epub_id`- the id of the requested ePub. In the most cases this should be an integer or string that represents the name of your epub without the file extension.
 2. `token` - the personalized token of the request. This token changed on every request, and only the two endpoints - e.g. your website or shop and this application should know how to build it. It contains a secret string, some of the request variables and a date string. Only if the token can be validated by the application, the request is handled.
@@ -65,13 +67,15 @@ You might want to use theese commands to interact with Pepgen on a regular basis
 
 ## Logging
 
-Depending on your configuration there is more or less logging saved into the log folder. Application logs are rotated once per day, but you might want to use the console command `bin/console clear logs` to get rid of old logfiles as well.
+Depending on your configuration there is more or less logging saved into the log folder (`epub_log_dir`). Application logs are rotated once per day, but you might want to use the console command `bin/console clear logs` to get rid of old logfiles as well. The watermark contains personal data of your customers, so it is never logged.
 
 ## Development
 
 Feel free to change Pepgen to your needs, PRs are welcome. Please test your change and stay close to standards regarding code climate, editor config and code styles.
 
 You might want to use the convinient shortcuts like `make dev`, `make test` oder `make fix`. Take a look into the Makefile for further information.
+
+The tests run within their own installation in the temp directory of the system, they never touch the epubs, logs or config of your installation. To use another config file outside of the tests, set the environment variable `PEPGEN_CONFIG` to its path.
 
 ## Disclaimer
 

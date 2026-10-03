@@ -2,12 +2,14 @@
 
 namespace Pepgen\Helper;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
 class Config
 {
+    /**
+     * The environment variable that may contain the path of another config file, e.g. for the tests.
+     */
+    public const ENV_CONFIG_FILE = 'PEPGEN_CONFIG';
 
     private $config;
 
@@ -16,19 +18,23 @@ class Config
         $this->config = $this->getConfig();
     }
 
+    /**
+     * Returns the path of the config file.
+     *
+     * @return string
+     */
+    public static function getConfigFile()
+    {
+        return getenv(self::ENV_CONFIG_FILE) ?: __DIR__ . '/../../../app/config/config.yml';
+    }
+
     private function getConfig()
     {
-        $configFinder = new Finder();
-
-        $configFinder->files()->name('config.yml')->in(__DIR__ . '/../../../app/config/');
-
-        $configs = array();
-
-        foreach ($configFinder as $config) {
-            $configs[] = $config->getContents();
+        $config_file = self::getConfigFile();
+        if (!is_file($config_file)) {
+            return [];
         }
-
-        return YAML::parse(implode('\r\n', $configs));
+        return Yaml::parseFile($config_file) ?: [];
     }
 
     public function get($key)

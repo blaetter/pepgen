@@ -1,6 +1,8 @@
 base_path: /path/to/pepgen
 http_base: http://localhost/pepgen
 secret: MY_BIG_FAT_SECRET
+# timezone of the website or shop, the current day of the token is determined in it
+timezone: Europe/Berlin
 textpattern: /<!--WATERMARK-->/i
 template: <p>%s</p>
 files_to_replace: /(file_1|file_2).xhtml/i
@@ -8,6 +10,6 @@ epub_log_dir: /logs
 epub_original_dir: /epub
 epub_temp_dir: /tmp
 epub_public_dir: /public/download
-# loglevel - @see RFC 5424
-loglevel: 100
+# loglevel - @see RFC 5424, 200 (INFO) logs every request, 100 (DEBUG) is meant for development only
+loglevel: 200
 keepfiles: 5
