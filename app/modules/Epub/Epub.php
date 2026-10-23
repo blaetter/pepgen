@@ -400,22 +400,21 @@ class Epub
 
     private function getLogPath()
     {
-        $base_path = $this->config->get('base_path') ?: __DIR__ . '/../../..';
-        return $base_path . ($this->config->get('epub_log_dir') ?: '/logs') . '/application.log';
+        return $this->config->getLogFile();
     }
 
     private function getOriginalEpubPath()
     {
-        return $this->config->get('base_path') . $this->config->get('epub_original_dir') . '/' . $this->epub;
+        return $this->config->getPath('epub_original_dir') . '/' . $this->epub;
     }
 
     private function getPublicEpubPath()
     {
-        return $this->config->get('base_path')  . $this->config->get('epub_public_dir') . '/' . $this->epub_personal;
+        return $this->config->getPath('epub_public_dir') . '/' . $this->epub_personal;
     }
 
     private function getTempEpubPath()
     {
-        return $this->config->get('base_path') . $this->config->get('epub_temp_dir') . '/' . $this->epub_personal;
+        return $this->config->getPath('epub_temp_dir') . '/' . $this->epub_personal;
     }
 }

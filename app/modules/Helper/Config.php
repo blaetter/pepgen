@@ -44,4 +44,28 @@ class Config
         }
         return false;
     }
+
+    /**
+     * Returns the path of a directory of the config within the installation (base_path + the value of the key).
+     *
+     * @param string $key The key of the directory, e.g. "epub_temp_dir"
+     * @return string
+     */
+    public function getPath($key)
+    {
+        return $this->get('base_path') . $this->get($key);
+    }
+
+    /**
+     * Returns the path of the log file (before rotation: the logger adds the date to its name).
+     *
+     * Without base_path the installation directory, without epub_log_dir the directory "/logs".
+     *
+     * @return string
+     */
+    public function getLogFile()
+    {
+        $base_path = $this->get('base_path') ?: __DIR__ . '/../../..';
+        return $base_path . ($this->get('epub_log_dir') ?: '/logs') . '/application.log';
+    }
 }

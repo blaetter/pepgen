@@ -192,12 +192,13 @@ class ClearCommand extends Command
         $this->target_dir = '';
         // set the directory depending on the given target
         if ('temp' == $target) {
-            $this->target_dir = $this->config->get('base_path') . $this->config->get('epub_temp_dir');
+            $this->target_dir = $this->config->getPath('epub_temp_dir');
         } elseif ('public' == $target) {
-            $this->target_dir = $this->config->get('base_path') . $this->config->get('epub_public_dir');
+            $this->target_dir = $this->config->getPath('epub_public_dir');
         } elseif ('logs' == $target) {
             $this->file_identifier = '*.log';
-            $this->target_dir = $this->config->get('base_path') . $this->config->get('epub_log_dir');
+            // The directory the logger writes into (with the same defaults).
+            $this->target_dir = dirname($this->config->getLogFile());
         }
     }
 

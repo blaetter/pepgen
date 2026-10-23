@@ -43,6 +43,35 @@ You need to configure the following parameters that are located in the `app/conf
 11. `loglevel` a RFC 5424 numeric loglevel. Defaults to `200` (INFO), `100` (DEBUG) is meant for development only.
 12. `keepfiles` number of logfiles that needs to be kept after rotation.
 
+## Health check
+
+For the monitoring, `GET /health` (or `HEAD`, no parameters, no login; next to `index.php`, so `/pepgen/health` if pepgen
+runs in a subdirectory) checks whether pepgen can generate ePubs:
+
+* `config` - the config file is readable and has the values a generation needs
+* `epubs` - the original directory is readable and contains at least one unzipped ePub
+* `storage` - the temp and the download directory are writable
+* `logs` - the log directory is writable, and so is the log file of today if it exists (a file created by a command run
+  as another user would make every generation fail)
+* `zip` - the `zip` program is found in `PATH` or in `/usr/bin`, `/usr/local/bin`, `/bin` (PHP-FPM clears the environment
+  by default); it is not run
+
+The answer is `200` with `{"status":"ok","checks":{"config":"ok","epubs":"ok","storage":"ok","logs":"ok","zip":"ok"}}`, or
+`503` with `"status":"error"` and `"error"` for the failed checks. It contains no paths, versions or config values; the
+reasons of failed checks are written to the error log of PHP (`pepgen health: …`). The answer has the header
+`Cache-Control: no-store`. Nothing is generated or written, so the check takes a few milliseconds.
+
+The web server has to pass `/health` to `public/index.php` like `/`, e.g. with nginx:
+
+```nginx
+location = /health {
+    try_files /index.php =404;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+    fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+}
+```
+
 ## Usage
 
 After setting up the application your website or shop sends a `POST` request to it (other methods are answered with `405 Method Not Allowed`, so tokens and watermarks do not end up in URLs and access logs). The application needs the following parameters:

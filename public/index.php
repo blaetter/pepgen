@@ -7,6 +7,25 @@ require_once('../vendor/autoload.php');
 // send json header
 header('Content-Type: application/json');
 
+// Health check for the monitoring: GET (or HEAD) /health next to this file, without parameters. 200 if pepgen can generate ePubs,
+// 503 otherwise; the answer names only the checks, the reasons go to the error log. Never cached.
+if (\Pepgen\Health\HealthCheck::isHealthRequest(
+    $_SERVER['REQUEST_URI'] ?? '/',
+    $_SERVER['SCRIPT_NAME'] ?? '/index.php',
+    $_SERVER['REQUEST_METHOD'] ?? ''
+)) {
+    header('Cache-Control: no-store');
+    try {
+        $health = (new \Pepgen\Health\HealthCheck())->run();
+    } catch (\Throwable $e) {
+        error_log('pepgen health: ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        $health = ['status' => 'error', 'checks' => []];
+    }
+    http_response_code('ok' === $health['status'] ? 200 : 503);
+    echo json_encode($health);
+    return;
+}
+
 // Only POST requests are accepted, so the token and the watermark do not end up in URLs and access logs.
 if ('POST' !== ($_SERVER['REQUEST_METHOD'] ?? '')) {
     header('HTTP/1.0 405 Method Not Allowed');
