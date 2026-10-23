@@ -32,6 +32,7 @@ Sections per version: Features, Security, Bugs, Removed, Maintenance (omit empty
 - Details of denied requests followed the message in the log without separator
 
 ### Maintenance
+- Patch updates (23.10.): `symfony/console`, `symfony/filesystem`, `symfony/process` 6.4.48, `symfony/string` 7.4.21, PHPUnit 10.5.66 (development); newer patches of `symfony/yaml`, Guzzle and `symfony/dependency-injection` left out as they were less than two weeks old
 - The paths of the config are resolved in one place (`Config::getPath()`, `Config::getLogFile()`), used by the generation, `clear` and the health check
 - Dependencies updated: Monolog 3, Symfony pinned to 6.4, abandoned `symfony/debug` removed; `composer audit` is clean
 - Runs on PHP 8.2 to 8.5
