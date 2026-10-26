@@ -82,6 +82,18 @@ After setting up the application your website or shop sends a `POST` request to 
 
 If a request does not provide all theese parameters, it will not be handled. The application itself copies the original unzipped ePub into a temporary folder, adds the watermark and zippes the ePub into `public/download` with a hashed filename.
 
+Only your website or shop needs to send `POST` requests, so it is recommended to allow them only from its addresses in the web server. Bots that try login or signup forms on every host are then rejected before PHP runs and do not fill the log with denied requests. With nginx, for example in the `location` that passes requests to PHP (`/health` and the downloads stay reachable with `GET`):
+
+```nginx
+limit_except GET HEAD {
+    allow 127.0.0.1;
+    allow ::1;
+    allow 192.0.2.10;    # the address of your website or shop
+    allow 2001:db8::10;
+    deny all;
+}
+```
+
 Your website or shop can now decide how to deliver that to your costumer, there are three ways to do so:
 
 1. Provide a direct download link: you can forward the user to the download location or you can display or mail the hashed URL of the generated ePub to the user. This method implicates, that the URL of this application becomes public. If you're fine with that, this method is the easy one and right for you.
@@ -96,7 +108,7 @@ You might want to use theese commands to interact with Pepgen on a regular basis
 
 ## Logging
 
-Depending on your configuration there is more or less logging saved into the log folder (`epub_log_dir`). Application logs are rotated once per day, but you might want to use the console command `bin/console clear logs` to get rid of old logfiles as well. The watermark contains personal data of your customers, so it is never logged.
+Depending on your configuration there is more or less logging saved into the log folder (`epub_log_dir`). Application logs are rotated once per day, but you might want to use the console command `bin/console clear logs` to get rid of old logfiles as well. The watermark contains personal data of your customers, so it is never logged. The entries contain the requested ePub id and token, but no values of the config.
 
 ## Development
 

@@ -112,12 +112,11 @@ class Epub
 
         // create a debugging information array
         // The watermark contains personal data of the customer and the valid token must not be logged, so both are
-        // left out. The requested token is enough to find the generated file.
+        // left out. The requested token is enough to find the generated file. Values of the config are the same for
+        // every request, so they are not logged either.
         $this->debugging_info = [
             'epub_id' => $this->epub_id,
-            'token' => $this->token,
-            'files' => $this->files_to_replace,
-            'pattern' => $this->textpattern
+            'token' => $this->token
         ];
 
         // creating instance of filesystem
