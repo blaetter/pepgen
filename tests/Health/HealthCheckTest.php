@@ -52,16 +52,6 @@ class HealthCheckTest extends BaseTest
         };
     }
 
-    /**
-     * Permissions do not stop root.
-     */
-    private function skipAsRoot()
-    {
-        if (function_exists('posix_geteuid') && 0 === posix_geteuid()) {
-            $this->markTestSkipped('Runs as root, file permissions do not apply.');
-        }
-    }
-
     private function check(?string $zip = '/bin/sh')
     {
         return new HealthCheck(new Config(), $this->finder($zip));
@@ -104,6 +94,26 @@ class HealthCheckTest extends BaseTest
         $this->assertSame('error', $result['status']);
         $this->assertSame('error', $result['checks']['epubs']);
         $this->assertSame('ok', $result['checks']['storage']);
+    }
+
+    public function testEpubDirectoryMissing()
+    {
+        (new Filesystem())->remove($this->path('epub'));
+        $check = $this->check();
+        $result = $check->run();
+        $this->assertSame('error', $result['checks']['epubs']);
+        $this->assertContains('epubs: directory not readable', $check->getReasons());
+    }
+
+    public function testLogDirectoryMissing()
+    {
+        (new Filesystem())->remove($this->path('logs'));
+        // the error log of the test lives in the log directory as well
+        ini_set('error_log', $this->path('php-error.log'));
+        $check = $this->check();
+        $result = $check->run();
+        $this->assertSame('error', $result['checks']['logs']);
+        $this->assertContains('logs: directory not writable', $check->getReasons());
     }
 
     public function testTempDirectoryMissing()

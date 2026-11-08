@@ -49,6 +49,16 @@ abstract class BaseTest extends TestCase
     }
 
     /**
+     * Permissions do not stop root.
+     */
+    protected function skipAsRoot()
+    {
+        if (function_exists('posix_geteuid') && 0 === posix_geteuid()) {
+            $this->markTestSkipped('Runs as root, file permissions do not apply.');
+        }
+    }
+
+    /**
      * Returns the path of a directory or file within the test installation.
      */
     protected function path($path)

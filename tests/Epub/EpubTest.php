@@ -289,6 +289,123 @@ class EpubTest extends BaseTest
     }
 
     /**
+     * If zip reports success without creating the epub, the request is denied.
+     */
+    public function testZipWithoutEpubIsDenied()
+    {
+        $epub = new class ($this->epub_id, $this->token, $this->watermark) extends \Pepgen\Epub\Epub {
+            protected function createProcess(array $command, $working_directory)
+            {
+                return new \Symfony\Component\Process\Process(['true'], $working_directory);
+            }
+        };
+        try {
+            $epub->run();
+            $this->fail('A missing epub after zipping should be denied.');
+        } catch (\ErrorException $exception) {
+            $this->assertSame(
+                'Something went wrong: Zipping went wrong. Could not create personalised ePub.',
+                $epub->message
+            );
+        }
+        $this->assertStringContainsString(
+            'Denied: Zipping went wrong. Could not create personalised ePub: Missing '
+                . $this->path('public/download/' . $this->token . '.' . $this->epub_id . '.epub'),
+            $this->readLog()
+        );
+    }
+
+    /**
+     * The epub cannot be copied into a temp directory that is not writable.
+     */
+    public function testCopyFailsInReadOnlyTempDirectory()
+    {
+        $this->skipAsRoot();
+        $epub = new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub->verify();
+        chmod($this->path('tmp'), 0555);
+        try {
+            $epub->copy();
+            $this->fail('Copying into a read-only directory should be denied.');
+        } catch (\ErrorException $exception) {
+            $this->assertSame('Something went wrong: Could not copy ePub.', $epub->message);
+        } finally {
+            chmod($this->path('tmp'), 0755);
+        }
+        $this->assertStringContainsString('Denied: Could not copy ePub: ', $this->readLog());
+    }
+
+    /**
+     * The watermark cannot be written into a temporary copy that is not writable.
+     */
+    public function testModifyFailsInReadOnlyCopy()
+    {
+        $this->skipAsRoot();
+        $temp_path = $this->path('tmp/' . $this->token . '.' . $this->epub_id . '.epub');
+        $epub = new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub->verify();
+        $epub->copy();
+        chmod($temp_path, 0555);
+        try {
+            $epub->modify();
+            $this->fail('Writing into a read-only copy should be denied.');
+        } catch (\ErrorException $exception) {
+            $this->assertSame('Something went wrong: Could not write watermark to file.', $epub->message);
+        } finally {
+            chmod($temp_path, 0755);
+        }
+        $this->assertStringContainsString('Denied: Could not write watermark to file: ', $this->readLog());
+    }
+
+    /**
+     * A temporary copy that cannot be removed is only logged, the personalised epub is ready anyway.
+     */
+    public function testCleanupFailureIsOnlyLogged()
+    {
+        $this->skipAsRoot();
+        $temp_path = $this->path('tmp/' . $this->token . '.' . $this->epub_id . '.epub');
+        $epub = new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark);
+        $epub->verify();
+        $epub->copy();
+        $epub->modify();
+        $epub->process();
+        chmod($temp_path, 0555);
+        try {
+            $epub->cleanup();
+        } finally {
+            chmod($temp_path, 0755);
+        }
+        $this->assertDirectoryExists($temp_path);
+        $this->assertFileExists($this->path('public/download/' . $this->token . '.' . $this->epub_id . '.epub'));
+        $this->assertStringContainsString(
+            'pepgen.WARNING: Cleanup: Could not remove temporary copy.',
+            $this->readLog()
+        );
+    }
+
+    /**
+     * Values of the config are the same for every request, so they are not logged.
+     */
+    public function testConfigValuesAreNotLogged()
+    {
+        (new \Pepgen\Epub\Epub($this->epub_id, $this->token, $this->watermark))->run();
+
+        $log = $this->readLog();
+        $this->assertStringContainsString('Success: epub ready for download.', $log);
+        $this->assertStringContainsString('"epub_id":"' . $this->epub_id . '"', $log);
+        $this->assertStringNotContainsString('"files":', $log);
+        $this->assertStringNotContainsString('"pattern":', $log);
+    }
+
+    /**
+     * Returns the log of today.
+     */
+    private function readLog()
+    {
+        return file_get_contents($this->path('logs/application-' . date('Y-m-d') . '.log'));
+    }
+
+    /**
      * zip does not leave temporary files in the public directory.
      */
     public function testNoTemporaryFilesInPublicDir()

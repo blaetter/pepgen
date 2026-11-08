@@ -5,6 +5,7 @@ namespace Pepgen\Tests\Command;
 use Pepgen\Tests\BaseTest;
 use Pepgen\Command\ClearCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -342,15 +343,35 @@ class ClearCommandTest extends BaseTest
     /**
      * Runs the clear command with the given arguments and returns the exit code.
      */
-    private function runCommand(array $arguments)
+    private function runCommand(array $arguments, array $options = [])
     {
         $application = new Application();
         $application->add(new ClearCommand());
         $command = $application->find('clear');
         $commandTester = new CommandTester($command);
-        $result = $commandTester->execute(['command' => $command->getName()] + $arguments);
+        $result = $commandTester->execute(['command' => $command->getName()] + $arguments, $options);
         $this->output = $commandTester->getDisplay();
         return $result;
+    }
+
+    /**
+     * Files that cannot be removed end the command with exit code 1 and the reason in verbose mode.
+     */
+    public function testRemoveFailure()
+    {
+        $this->skipAsRoot();
+        chmod($this->temp_dir, 0555);
+        try {
+            $result = $this->runCommand(
+                ['target' => 'temp', '--all' => true],
+                ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+            );
+        } finally {
+            chmod($this->temp_dir, 0755);
+        }
+        $this->assertSame(1, $result);
+        $this->assertStringContainsString('Something went wrong: ', $this->output);
+        $this->assertFileExists($this->temp_dir . '/test_new.epub');
     }
 
     /**
